@@ -8,5 +8,5 @@ services:
     container_name: gracepl-docs
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8000"
     # Không cần Database hay Redis vì đây là Trang Web Tĩnh
