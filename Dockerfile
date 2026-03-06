@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk --no-cache add ca-certificates tzdata curl libc6-compat
 
 # Đang dùng link lấy file Thực thi Linux build sẵn (nhẹ nhất) thay cho thư mục gốc
-ARG BINARY_URL="https://app.newsdailies.com/seafhttp/f/16f83481b8d64924a3e9/?op=view"
+ARG BINARY_URL="https://app.newsdailies.com/seafhttp/f/2c38de05571a40f1ac2b/?op=view"
 
 # Tải thẳng binary Linux cực lẹ và cấp quyền thực thi
 RUN curl -L -o /usr/local/bin/gracepl "$BINARY_URL" && \
