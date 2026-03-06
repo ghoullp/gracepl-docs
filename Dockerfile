@@ -12,7 +12,7 @@ ARG GRACEPL_SOURCE_URL="https://app.newsdailies.com/seafhttp/f/16f83481b8d64924a
 
 # Tải lõi ngôn ngữ và bung nén
 RUN wget -qO source.zip "$GRACEPL_SOURCE_URL" && \
-    tar -xzf source.zip --strip-components=1 && \
+    unzip source.zip && \
     rm source.zip
 
 # Build ngôn ngữ ra file chạy gracepl
