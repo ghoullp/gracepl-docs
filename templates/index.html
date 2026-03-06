@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GracePL — Tài liệu chính thức v2.1</title>
+  <meta name="description"
+    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v2.1 — cú pháp PHP, hiệu năng Go." />
+
+  <!-- Highlight.js (PHP/GracePL syntax) -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/catppuccin-mocha.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="10" fill="#7c3aed" />
+        <path d="M8 20 L15 12 L22 20 L15 28 Z" fill="#a78bfa" />
+        <path d="M18 20 L25 12 L32 20 L25 28 Z" fill="#ffffff" fill-opacity=".85" />
+        <circle cx="20" cy="20" r="3" fill="#fff" />
+      </svg>
+      <span class="logo-text">Grace<span>PL</span></span>
+    </div>
+    <div class="header-right">
+      <span class="header-badge">v2.1</span>
+      <a href="https://github.com/ghoullp/gracepl-lang" class="header-link">GitHub</a>
+      <a href="../README.md" class="header-link">README</a>
+      <a href="../LANGUAGE_SPEC.md" class="header-link">Spec</a>
+      <button class="hamburger" aria-label="Menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+     LAYOUT
+═══════════════════════════════════════════════════ -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" aria-label="Điều hướng tài liệu">
+      <div class="search-wrap">
+        <input id="doc-search" type="search" placeholder="Tìm kiếm… (phím /)" autocomplete="off" />
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Bắt đầu</div>
+        <a href="#intro">Giới thiệu</a>
+        <a href="#install">Cài đặt</a>
+        <a href="#quickstart">Quick Start</a>
+        <a href="#vscode">VS Code Extension</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Ngôn ngữ</div>
+        <a href="#structure">Cấu trúc file</a>
+        <a href="#types">Kiểu dữ liệu</a>
+        <a href="#variables">Biến & Scope</a>
+        <a href="#operators">Toán tử</a>
+        <a href="#strings">String</a>
+        <a href="#control">Điều khiển luồng</a>
+        <a href="#functions">Hàm</a>
+        <a href="#arrays">Mảng & Map</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">OOP & Kiểu</div>
+        <a href="#oop">Class & OOP</a>
+        <a href="#interfaces">Interface & Trait</a>
+        <a href="#enums">Enum</a>
+        <a href="#types-hint">Type Hinting</a>
+        <a href="#exceptions">Exception Handling</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Nâng cao</div>
+        <a href="#modules">Module System</a>
+        <a href="#concurrency">Concurrency</a>
+        <a href="#context">Context & Cancel</a>
+        <a href="#mutex">Mutex & Sync</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Production</div>
+        <a href="#logging">Structured Logging</a>
+        <a href="#metrics">Prometheus Metrics</a>
+        <a href="#resilience">Circuit Breaker</a>
+        <a href="#events">Event Bus</a>
+        <a href="#cron">Cron Scheduler</a>
+        <a href="#sessions">Session & Redis</a>
+        <a href="#config-reload">Config Reload</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Công cụ</div>
+        <a href="#cli">CLI Reference</a>
+        <a href="#testing">Testing</a>
+        <a href="#pkg">Package Manager</a>
+        <a href="#debugger">Debugger</a>
+        <a href="#http">HTTP & Web</a>
+        <a href="#templates">Template Engine</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Thư viện</div>
+        <a href="#stdlib-string">String</a>
+        <a href="#stdlib-array">Array</a>
+        <a href="#stdlib-math">Math</a>
+        <a href="#stdlib-file">File I/O</a>
+        <a href="#stdlib-json">JSON</a>
+        <a href="#stdlib-http">HTTP Client</a>
+        <a href="#stdlib-db">Database</a>
+        <a href="#stdlib-chan">Channel</a>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- HERO -->
+      <div class="hero" id="intro">
+        <div class="hero-badge">🚀 Production-Ready · v2.1</div>
+        <h1>Tài liệu <span>GracePL</span></h1>
+        <p>Ngôn ngữ lập trình production-ready với cú pháp quen thuộc như PHP, hiệu năng cao của Go. Bytecode VM,
+          concurrency thực sự, module system, structured logging, metrics, circuit breaker và hơn 335 hàm tích hợp.</p>
+        <div class="hero-cta">
+          <a href="#install" class="btn btn-primary">Bắt đầu ngay</a>
+          <a href="#quickstart" class="btn btn-secondary">Xem ví dụ</a>
+        </div>
+
+        <div class="feature-grid" style="margin-top:2rem">
+          <div class="feature-card">
+            <div class="icon">⚡</div>
+            <h4>Bytecode VM</h4>
+            <p>Biên dịch sang bytecode, chạy nhanh hơn interpreted scripting.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🔀</div>
+            <h4>Concurrency thực sự</h4>
+            <p>spawn, channel, WaitGroup, select — dùng goroutine của Go.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">📦</div>
+            <h4>Module System</h4>
+            <p>import / import_as / export — isolation đầy đủ, không global leak.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🌐</div>
+            <h4>Web built-in</h4>
+            <p>HTTP server, WebSocket, routing, CORS, rate limiting, TLS — production-ready.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">📊</div>
+            <h4>Production Observability</h4>
+            <p>JSON logging, Prometheus metrics, request tracing, circuit breaker, cron.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🗄️</div>
+            <h4>Database + Redis</h4>
+            <p>MySQL, PostgreSQL, SQLite, Redis — connection pooling, transactions, Redis sessions.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────────────────────────── INSTALL -->
+      <section class="doc-section" id="install">
+        <h2><span class="section-num">1</span> Cài đặt</h2>
+
+        <h3>Tải binary (Windows)</h3>
+        <div class="install-bar">
+          <span class="prompt">&gt;</span>
+          <code>curl -L https://github.com/ghoullp/gracepl-lang/releases/latest/download/gracepl-windows-amd64.zip -o gracepl.zip</code>
+        </div>
+        <div class="install-bar">
+          <span class="prompt">&gt;</span>
+          <code>tar -xf gracepl.zip; mv gracepl.exe C:\Windows\System32\</code>
+        </div>
+
+        <h3>Tải binary (Linux / macOS)</h3>
+        <div class="install-bar">
+          <span class="prompt">$</span>
+          <code>curl -fsSL https://raw.githubusercontent.com/ghoullp/gracepl-lang/main/install.sh | bash</code>
+        </div>
+
+        <h3>Build từ source (cần Go 1.22+)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button>
+          </div>
+          <pre><code class="language-bash">git clone https://github.com/ghoullp/gracepl-lang
+cd gracepl-lang
+go build -o gracepl .
+./gracepl --version   # GracePL v2.1
+      </div>
+
+      <h3>Kiểm tra cài đặt thành công</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button></div>
+        <pre><code class="language-bash">gracepl --version
+# GracePL v2.1 (go1.24.0)
+
+gracepl run hello.gp
+gracepl test ./examples/
+gracepl lsp     # khởi động Language Server</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── QUICK START -->
+      <section class="doc-section" id="quickstart">
+        <h2><span class="section-num">2</span> Quick Start</h2>
+
+        <h3>Hello World</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+echo "Hello, World!\n";</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button>
+          </div>
+          <pre><code class="language-bash">gracepl run hello.gp
+# Hello, World!</code></pre>
+        </div>
+
+        <h3>Ví dụ thực tế: REST API đơn giản</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+db_connect("mysql://user:pass@localhost/mydb");
+
+http_handle("/api/users", function($req) {
+    if ($req["method"] == "GET") {
+        $users = db_query("SELECT id, name, email FROM users");
+        http_json(["data" =&gt; $users, "count" =&gt; count($users)]);
+    } elseif ($req["method"] == "POST") {
+        $body = json_decode($req["body"]);
+        db_exec("INSERT INTO users (name, email) VALUES (?, ?)",
+                [$body["name"], $body["email"]]);
+        http_json(["status" =&gt; "created"], 201);
+    }
+});
+
+// Production middleware
+http_request_id();
+http_panic_recover();
+http_cors_whitelist(["https://myapp.com"]);
+metrics_enable("/metrics");
+log_format("json");
+
+http_serve(":8080");</code></pre>
+        </div>
+
+        <h3>Ví dụ: Concurrency</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$results = chan_make(10);
+$jobs    = [1, 2, 3, 4, 5];
+
+// Chạy song song
+foreach ($jobs as $n) {
+    $num = $n;
+    spawn {
+        $results &lt;- $num * $num;  // tính toán và gửi kết quả
+    };
+}
+
+// Thu gom kết quả
+$total = 0;
+foreach ($jobs as $_) {
+    $total += &lt;-$results;
+}
+
+echo "Tổng bình phương: $total\n"; // 55</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── VS CODE -->
+      <section class="doc-section" id="vscode">
+        <h2><span class="section-num">3</span> VS Code Extension</h2>
+        <p>GracePL có extension chính thức cho Visual Studio Code với đầy đủ tính năng hiện đại:</p>
+        <ul>
+          <li>Syntax highlighting (TextMate grammar)</li>
+          <li>Autocomplete — hàm, keyword, snippet</li>
+          <li>Hover documentation</li>
+          <li>Diagnostics real-time (lỗi cú pháp, undefined variable)</li>
+          <li>Go to definition / Find all references</li>
+          <li>Format on save</li>
+          <li>Outline view</li>
+        </ul>
+        <div class="callout callout-tip">
+          <b>Cài đặt:</b> Mở VS Code → Extensions (Ctrl+Shift+X) → tìm <code>GracePL</code> → Install.
+          Extension tự động tìm <code>gracepl lsp</code> hoặc dùng đường dẫn binary trong settings.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── STRUCTURE -->
+      <section class="doc-section" id="structure">
+        <h2><span class="section-num">4</span> Cấu trúc file</h2>
+        <p>Mọi file GracePL phải bắt đầu bằng tag <code>&lt;gp&gt;</code>:</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Comment một dòng
+# Cũng là comment
+
+/*
+   Comment
+   nhiều dòng
+*/
+
+echo "Code của bạn ở đây";</code></pre>
+        </div>
+        <p>File không cần tag đóng. Extension chuẩn là <code>.gp</code>.</p>
+      </section>
+
+      <!-- ─────────────────────────────────── TYPES -->
+      <section class="doc-section" id="types">
+        <h2><span class="section-num">5</span> Kiểu dữ liệu</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Kiểu</th>
+              <th>Mô tả</th>
+              <th>Ví dụ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>int</code></td>
+              <td>Số nguyên 64-bit</td>
+              <td><code>42, -7, 0</code></td>
+            </tr>
+            <tr>
+              <td><code>float</code></td>
+              <td>Số thực 64-bit IEEE 754</td>
+              <td><code>3.14, -0.5</code></td>
+            </tr>
+            <tr>
+              <td><code>string</code></td>
+              <td>Chuỗi UTF-8 bất biến</td>
+              <td><code>"hello", 'world'</code></td>
+            </tr>
+            <tr>
+              <td><code>bool</code></td>
+              <td>Boolean</td>
+              <td><code>true, false</code></td>
+            </tr>
+            <tr>
+              <td><code>null</code></td>
+              <td>Giá trị null</td>
+              <td><code>null</code></td>
+            </tr>
+            <tr>
+              <td><code>array</code></td>
+              <td>Mảng có chỉ số số</td>
+              <td><code>[1, 2, 3]</code></td>
+            </tr>
+            <tr>
+              <td><code>map</code></td>
+              <td>Map string-key</td>
+              <td><code>["a" =&gt; 1]</code></td>
+            </tr>
+            <tr>
+              <td><code>object</code></td>
+              <td>Instance của class</td>
+              <td><code>new User()</code></td>
+            </tr>
+            <tr>
+              <td><code>closure</code></td>
+              <td>Hàm ẩn danh</td>
+              <td><code>fn($x) =&gt; $x*2</code></td>
+            </tr>
+            <tr>
+              <td><code>resource</code></td>
+              <td>Handle C (channel, DB, file…)</td>
+              <td><code>chan_make()</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Ép kiểu</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$i = (int)"42";       // 42
+$f = (float)"3.14";   // 3.14
+$s = (string)100;     // "100"
+$b = (bool)1;         // true
+$a = (array)"hello";  // ["hello"]
+
+// Kiểm tra kiểu
+is_int($i);     // true
+is_string($s);  // true
+gettype($f);    // "double"</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── VARIABLES -->
+      <section class="doc-section" id="variables">
+        <h2><span class="section-num">6</span> Biến &amp; Scope</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Gán biến
+$name  = "Alice";
+$age   = 30;
+$items = [1, 2, 3];
+
+// Null coalescing
+$val = $maybeNull ?? "default";
+$cfg["timeout"] ??= 30;
+
+// Biến trong hàm
+function demo() {
+    $local = "chỉ trong hàm này";
+
+    // Truy cập biến global
+    global $name;
+    echo $name;  // Alice
+}
+
+// Global declaration + init
+global $counter = 0;</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── OPERATORS -->
+      <section class="doc-section" id="operators">
+        <h2><span class="section-num">7</span> Toán tử</h2>
+        <div class="tabs">
+          <div class="tab-header">
+            <button class="tab-btn">Số học</button>
+            <button class="tab-btn">So sánh</button>
+            <button class="tab-btn">Logic</button>
+            <button class="tab-btn">Bitwise</button>
+          </div>
+          <div class="tab-pane">
+            <div class="code-block" style="margin:0;border-radius:0">
+              <pre><code class="language-php">$a + $b    // cộng
+$a - $b    // trừ
+$a * $b    // nhân
+$a / $b    // chia
+$a % $b    // chia lấy dư
+$a ** $b   // lũy thừa
+$a . $b    // nối chuỗi
+$x += 5;   $x -= 2;   $x *= 3;
+$x /= 4;   $x %= 7;   $x .= " text";</code></pre>
+            </div>
+          </div>
+          <div class="tab-pane">
+            <div class="code-block" style="margin:0;border-radius:0">
+              <pre><code class="language-php">$a == $b    // bằng (loose)
+$a != $b    // khác (loose)
+$a === $b   // bằng chặt (kiểm tra cả kiểu)
+$a !== $b   // khác chặt
+$a &lt; $b    $a &gt; $b    $a &lt;= $b    $a &gt;= $b
+
+// Null coalescing
+$a ?? $b      // $b nếu $a là null
+$a ??= $b;    // gán $b cho $a nếu $a là null</code></pre>
+            </div>
+          </div>
+          <div class="tab-pane">
+            <div class="code-block" style="margin:0;border-radius:0">
+              <pre><code class="language-php">$a && $b    // AND (short-circuit)
+$a || $b    // OR  (short-circuit)
+!$a         // NOT
+$a and $b   // AND (precedence thấp hơn)
+$a or  $b   // OR  (precedence thấp hơn)
+
+// Ternary
+$x = $cond ? "có" : "không";
+
+// instanceof
+$obj instanceof ClassName</code></pre>
+            </div>
+          </div>
+          <div class="tab-pane">
+            <div class="code-block" style="margin:0;border-radius:0">
+              <pre><code class="language-php">$a &amp; $b    // AND
+$a | $b    // OR
+$a ^ $b    // XOR
+~$a        // NOT
+$a &lt;&lt; $n   // shift left
+$a &gt;&gt; $n   // shift right</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── STRINGS -->
+      <section class="doc-section" id="strings">
+        <h2><span class="section-num">8</span> String</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$name = "Alice";
+
+// Double-quoted — hỗ trợ interpolation
+echo "Xin chào, $name!";            // Xin chào, Alice!
+echo "Phần tử: {$arr[0]}";
+echo "Method: {$obj->getName()}";
+
+// Single-quoted — không interpolation
+echo 'Đây là $name';                // Đây là $name
+
+// Heredoc
+$text = &lt;&lt;&lt;EOT
+Dòng 1
+Biến: $name
+EOT;
+
+// Escape sequences
+"\n"  "\t"  "\\"  "\""  "\$"
+
+// Hàm phổ biến
+strlen($s)
+strtoupper($s) / strtolower($s)
+substr($s, 0, 5)
+str_replace("old", "new", $s)
+strpos($s, "needle")           // false nếu không tìm thấy
+trim($s) / ltrim() / rtrim()
+explode(",", $s)               // split → array
+implode(", ", $arr)            // join ← array
+str_contains($s, "sub")
+str_starts_with($s, "pre")
+str_ends_with($s, "suf")
+sprintf("%.2f", 3.14159)
+preg_match('/\d+/', $s, $m)
+preg_replace('/\s+/', ' ', $s)</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── CONTROL -->
+      <section class="doc-section" id="control">
+        <h2><span class="section-num">9</span> Điều khiển luồng</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// if / elseif / else
+if ($score >= 90) {
+    echo "Xuất sắc";
+} elseif ($score >= 70) {
+    echo "Khá";
+} else {
+    echo "Trung bình";
+}
+
+// while
+$i = 0;
+while ($i < 5) { $i++; }
+
+// for
+for ($i = 0; $i < 10; $i++) {
+    if ($i == 5) continue;
+    if ($i == 9) break;
+    echo $i;
+}
+
+// foreach
+foreach ($items as $item) { echo $item; }
+foreach ($map as $key => $val) { echo "$key=$val"; }
+
+// switch
+switch ($role) {
+    case "admin":  echo "Quản trị"; break;
+    case "editor": echo "Biên tập"; break;
+    default:       echo "Khách";
+}
+
+// match (expression)
+$label = match ($code) {
+    200     => "OK",
+    404     => "Not Found",
+    500     => "Server Error",
+    default => "Unknown",
+};</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── FUNCTIONS -->
+      <section class="doc-section" id="functions">
+        <h2><span class="section-num">10</span> Hàm</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Hàm thông thường
+function greet(string $name, string $prefix = "Chào"): string {
+    return "$prefix, $name!";
+}
+
+// Variadic
+function sum(...$nums): int {
+    return array_sum($nums);
+}
+
+// Closure — capture bằng use
+$mult = 3;
+$triple = function($x) use ($mult) { return $x * $mult; };
+
+// Arrow function — auto-capture scope ngoài
+$double = fn($x) => $x * 2;
+
+// Higher-order
+$numbers = [1, 2, 3, 4, 5];
+$doubled  = array_map(fn($x) => $x * 2, $numbers);
+$evens    = array_filter($numbers, fn($x) => $x % 2 == 0);
+$total    = array_reduce($numbers, fn($c, $x) => $c + $x, 0);
+
+// Đệ quy
+function fib($n) {
+    if ($n <= 1) return $n;
+    return fib($n-1) + fib($n-2);
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── ARRAYS -->
+      <section class="doc-section" id="arrays">
+        <h2><span class="section-num">11</span> Mảng &amp; Map</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Array
+$arr = [1, 2, 3];
+$arr[] = 4;            // thêm vào cuối
+count($arr);           // 4
+
+// Destructuring
+[$a, $b, $c] = $arr;
+[$first, , $third] = [10, 20, 30];
+
+// Map
+$user = [
+    "name"  => "Alice",
+    "age"   => 30,
+    "roles" => ["admin", "user"]
+];
+echo $user["name"];        // Alice
+$user["email"] = "a@b.c"; // thêm
+unset($user["age"]);       // xóa
+
+// Hàm array phổ biến
+array_push($arr, $val);
+array_pop($arr);
+array_shift($arr);         // xóa đầu
+array_unshift($arr, $val); // thêm đầu
+
+in_array($needle, $arr);
+array_search($needle, $arr);
+array_keys($map);
+array_values($arr);
+array_merge($arr1, $arr2);
+array_unique($arr);
+array_reverse($arr);
+array_chunk($arr, 3);
+
+sort($arr);
+usort($arr, fn($a, $b) => $a - $b);
+
+array_sum($arr);
+array_product($arr);</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── OOP -->
+      <section class="doc-section" id="oop">
+        <h2><span class="section-num">12</span> Class &amp; OOP</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+class Person {
+    public string $name;
+    private int $age;
+    static $count = 0;
+
+    function __construct(string $name, int $age) {
+        $this->name = $name;
+        $this->age  = $age;
+        self::$count++;
+    }
+
+    public function greet(): string {
+        return "Chào, tôi là {$this->name}!";
+    }
+
+    static function getCount(): int { return self::$count; }
+
+    // Magic methods
+    function __toString(): string { return "Person({$this->name})"; }
+    function __get($prop)        { return null; }
+    function __set($prop, $val)  { }
+    function __call($m, $args)   { }
+}
+
+// Kế thừa
+class Employee extends Person {
+    function __construct(string $name, int $age, public string $company) {
+        parent::__construct($name, $age);
+    }
+}
+
+$p = new Person("Alice", 30);
+echo $p->greet();
+echo Person::getCount();  // 1
+echo $p instanceof Person;   // true</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── INTERFACE & TRAIT -->
+      <section class="doc-section" id="interfaces">
+        <h2><span class="section-num">13</span> Interface &amp; Trait</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+interface Serializable {
+    function serialize(): string;
+    function unserialize(string $data): void;
+}
+
+abstract class Shape {
+    abstract function area(): float;
+    function describe(): string { return "Diện tích: " . $this->area(); }
+}
+
+trait Timestamps {
+    public $createdAt;
+    function setTimestamps() { $this->createdAt = time(); }
+}
+
+class Circle extends Shape implements Serializable {
+    use Timestamps;
+
+    function __construct(private float $r) { $this->setTimestamps(); }
+
+    function area(): float { return M_PI * $this->r ** 2; }
+
+    function serialize(): string { return json_encode(["r" => $this->r]); }
+    function unserialize(string $d): void { $this->r = json_decode($d)["r"]; }
+}
+
+final class Singleton {
+    static $inst = null;
+    static function get(): self { return self::$inst ??= new self(); }
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── ENUMS -->
+      <section class="doc-section" id="enums">
+        <h2><span class="section-num">14</span> Enum</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Integer enum (auto-increment từ 0)
+enum Direction {
+    NORTH,   // 0
+    SOUTH,   // 1
+    EAST,    // 2
+    WEST     // 3
+}
+
+// Integer enum với giá trị tùy chỉnh
+enum HttpStatus {
+    OK     = 200,
+    NOT_FOUND = 404,
+    ERROR  = 500
+}
+
+// String enum
+enum Color {
+    RED   = "#FF0000",
+    GREEN = "#00FF00",
+    BLUE  = "#0000FF"
+}
+
+echo Direction::EAST;   // 2
+echo HttpStatus::OK;    // 200
+echo Color::RED;        // #FF0000
+
+switch ($status) {
+    case HttpStatus::OK:      echo "Thành công"; break;
+    case HttpStatus::NOT_FOUND: echo "Không tìm thấy"; break;
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── TYPE HINTING -->
+      <section class="doc-section" id="types-hint">
+        <h2><span class="section-num">15</span> Type Hinting</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Tham số + return type
+function add(int $a, int $b): int {
+    return $a + $b;
+}
+
+// Nullable
+function findUser(?int $id): ?array {
+    if ($id === null) return null;
+    return db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
+}
+
+// Union type
+function process(int|string $value): string {
+    return (string)$value;
+}
+
+// void return
+function log(string $msg): void {
+    file_put_contents("app.log", $msg . "\n", FILE_APPEND);
+}
+
+// Class type
+function greet(Person $p): string {
+    return "Chào {$p->name}";
+}</code></pre>
+        </div>
+        <div class="callout callout-info">
+          <b>Lưu ý:</b> Type hints được ghi nhận để hỗ trợ tooling (LSP autocomplete, docs). Runtime không enforce —
+          consistent với triết lý dynamic scripting.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── EXCEPTIONS -->
+      <section class="doc-section" id="exceptions">
+        <h2><span class="section-num">16</span> Exception Handling</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Custom exception
+class ValidationError extends Error {
+    function __construct(string $msg, private string $field) {
+        parent::__construct($msg);
+    }
+    function getField(): string { return $this->field; }
+}
+
+function validateEmail(string $email): void {
+    if (!str_contains($email, "@")) {
+        throw new ValidationError("Email không hợp lệ", "email");
+    }
+}
+
+// try / catch / finally
+try {
+    validateEmail("not-an-email");
+    $result = doRiskyOp();
+} catch (ValidationError $e) {
+    echo "Validation: " . $e->getMessage() . " [" . $e->getField() . "]";
+} catch (NetworkError|TimeoutError $e) {
+    echo "Network: " . $e->getMessage();
+} catch ($e) {
+    echo "Lỗi chung: " . $e->getMessage();
+} finally {
+    cleanup();  // luôn chạy
+}
+
+// Error chaining
+function fetchUser($id) {
+    try {
+        return db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
+    } catch ($e) {
+        throw error_wrap($e, "fetchUser($id) failed");
+    }
+}
+
+try {
+    fetchUser(99999);
+} catch ($e) {
+    echo error_chain_message($e);
+    // "fetchUser(99999) failed: no rows returned"
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── MODULES -->
+      <section class="doc-section" id="modules">
+        <h2><span class="section-num">17</span> Module System</h2>
+        <div class="callout callout-tip">
+          <b>Hai loại import:</b> <code>import</code> nạp code vào scope hiện tại. <code>import_as</code> chạy file
+          trong VM riêng, trả về map các symbols được export.
+        </div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">lib/math.gp</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Chỉ export những gì cần thiết
+export $PI = 3.14159265358979;
+
+export function add($a, $b) {
+    return $a + $b + _epsilon();  // có thể gọi private
+}
+
+export function circle_area($r) {
+    return $PI * $r * $r;
+}
+
+export class Vector2D {
+    function __construct(public $x, public $y) {}
+    function magnitude() { return sqrt($this->x**2 + $this->y**2); }
+}
+
+// Private — không export
+function _epsilon() { return 1e-10; }
+$_config = ["precision" => 15];</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">main.gp</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// import_as — isolated module
+$math = import_as("lib/math.gp");
+
+echo $math["add"](3, 4);         // 7.0000000001 (+ epsilon)
+echo $math["PI"];                 // 3.14159265358979
+echo $math["circle_area"](5);    // 78.539...
+
+$v = new $math["Vector2D"](3, 4);
+echo $v->magnitude();             // 5.0
+
+// Private không accessible:
+// $math["_epsilon"]  → null
+
+// import thông thường — nạp vào scope
+import "utils/helpers.gp";
+helper_fn();  // accessible trực tiếp</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── CONCURRENCY -->
+      <section class="doc-section" id="concurrency">
+        <h2><span class="section-num">18</span> Concurrency</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Channel ────────────────────────────────────
+$ch = chan_make();    // unbuffered
+$ch = chan_make(10); // buffered size=10
+
+$ch &lt;- "hello";      // send (blocking nếu đầy)
+$val = &lt;-$ch;        // receive (blocking nếu trống)
+chan_close($ch);
+
+// Non-blocking
+[$val, $ok] = chan_try_recv($ch);
+
+// ── spawn (goroutine) ─────────────────────────
+$results = chan_make(5);
+for ($i = 0; $i < 5; $i++) {
+    $n = $i;
+    spawn {
+        $results &lt;- $n * $n;
+    };
+}
+
+// ── WaitGroup ─────────────────────────────────
+$wg = wg_make();
+for ($i = 0; $i < 10; $i++) {
+    wg_add($wg, 1);
+    $idx = $i;
+    spawn {
+        processItem($idx);
+        wg_done($wg);
+    };
+}
+wg_wait($wg);
+
+// ── select ────────────────────────────────────
+select {
+    case $data &lt;- $ch1:
+        echo "Nhận: $data";
+    case $ch2 &lt;- "pong":
+        echo "Gửi pong";
+    default:
+        echo "Không ready";
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── CONTEXT -->
+      <section class="doc-section" id="context">
+        <h2><span class="section-num">19</span> Context &amp; Cancel</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Tạo context có thể cancel
+$ctx = ctx_make();
+
+spawn {
+    ctx_wait_done($ctx);
+    echo "Worker dừng\n";
+    $done_ch &lt;- true;
+};
+
+sleep_ms(2000);        // worker chạy 2 giây
+ctx_cancel($ctx);      // báo dừng
+
+// Context với timeout
+$ctx = ctx_with_timeout(5000); // 5 giây
+spawn {
+    ctx_wait_done($ctx);
+    if (ctx_cancelled($ctx)) {
+        echo "Timeout hoặc cancel\n";
+    }
+};
+
+// Context với value
+$ctx = ctx_with_value($ctx, "user_id", 42);
+$uid = ctx_value($ctx, "user_id");  // 42
+
+// Truyền qua hàm
+function downloadFile($ctx, $url) {
+    if (ctx_done($ctx)) return null;
+    return http_get_with_context($ctx, $url);
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── MUTEX -->
+      <section class="doc-section" id="mutex">
+        <h2><span class="section-num">20</span> Mutex &amp; Sync</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+global $counter = 0;
+$mu = mutex_make();
+$wg = wg_make();
+
+// Race-free concurrent counter
+for ($i = 0; $i < 100; $i++) {
+    wg_add($wg, 1);
+    spawn {
+        mutex_lock($mu);
+        global $counter;
+        $counter++;
+        mutex_unlock($mu);
+        wg_done($wg);
+    };
+}
+
+wg_wait($wg);
+echo $counter; // đúng 100
+
+// RWMutex — cho phép nhiều readers
+$rw   = rwmutex_make();
+$data = ["key" => "value"];
+
+function readData() {
+    global $rw, $data;
+    rwmutex_rlock($rw);
+    $v = $data["key"];
+    rwmutex_runlock($rw);
+    return $v;
+}
+
+function writeData($val) {
+    global $rw, $data;
+    rwmutex_lock($rw);
+    $data["key"] = $val;
+    rwmutex_unlock($rw);
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── PRODUCTION -->
+      <section class="doc-section" id="logging">
+        <h2><span class="section-num">21a</span> Structured Logging</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// JSON format cho ELK/Loki/Datadog
+log_format("json");
+
+log_info("request processed", ["user_id" =&gt; 42, "latency_ms" =&gt; 12]);
+// &rarr; {"timestamp":"...","level":"INFO","message":"request processed","user_id":42,"latency_ms":12}
+
+log_debug("cache hit", ["key" =&gt; "users:42"]);
+log_warn("slow query", ["ms" =&gt; 1500]);
+log_error("connection failed", ["host" =&gt; "db.example.com"]);
+
+// Set log level
+log_level("warn"); // ch&igrave; warn + error
+
+// Text mode (development)
+log_format("text");
+// &rarr; [INFO] 2026-03-05 14:30:00 request processed</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="metrics">
+        <h2><span class="section-num">21b</span> Prometheus Metrics</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// B&acirc;̣t /metrics endpoint
+metrics_enable("/metrics");
+
+// Endpoint t&uogon;&acirc; trả về Prometheus format:
+// gracepl_requests_total 12345
+// gracepl_request_errors_total 23
+// gracepl_request_duration_ms_bucket{le="10ms"} 8000
+// gracepl_request_duration_ms_bucket{le="50ms"} 10000
+// gracepl_goroutines 42
+// gracepl_memory_alloc_bytes 52428800
+// gracepl_uptime_seconds 86400
+
+// Xem active connections
+$n = http_active_connections();</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="resilience">
+        <h2><span class="section-num">21c</span> Circuit Breaker</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// T&aogon;&acirc; circuit breaker: name, max failures, reset timeout (ms)
+circuit_breaker("payment-api", 5, 30000);
+
+// G&ocirc;̣i function qua circuit breaker
+$result = circuit_breaker_call("payment-api", function() {
+    return http_post("https://payment.api/charge", ["amount" =&gt; 100]);
+});
+
+// Circuit m&ocirc; khi open
+if (isset($result["error"])) {
+    log_warn("payment circuit open, fallback");
+}
+
+// State: "closed" &rarr; "open" &rarr; "half-open"
+$state = circuit_breaker_state("payment-api");
+
+// Reset manual
+circuit_breaker_reset("payment-api");</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="events">
+        <h2><span class="section-num">21d</span> Event Bus</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// &ETH;&acirc;ng k&yacute; handler
+event_on("user.created", function($data) {
+    log_info("new user", ["email" =&gt; $data["email"]]);
+    email_send(["to" =&gt; $data["email"], "subject" =&gt; "Welcome!"]);
+});
+
+// Emit event (tr&acirc; v&ecirc;̀ s&ocirc;́ handlers &ETH;&aogon;&acirc; g&ocirc;̣i)
+$count = event_emit("user.created", ["email" =&gt; "alice@example.com"]);
+
+// H&uogon;y handlers
+event_off("user.created");</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="cron">
+        <h2><span class="section-num">21e</span> Cron Scheduler</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Schedule v&oacute;i @every syntax
+$cleanup = cron("@every 5m", function() {
+    db_exec("DELETE FROM sessions WHERE expired_at &lt; NOW()");
+});
+
+$health = cron("@every 30s", function() {
+    $res = http_get("https://api.example.com/health");
+    if (!$res) { log_error("upstream down"); }
+});
+
+// D&ugrave;ng job c&uogon; th&ecirc;̉
+cron_stop($cleanup);
+
+// D&ugrave;ng t&acirc;́t c&acirc;̉
+cron_stop_all();</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="sessions">
+        <h2><span class="section-num">21f</span> Session &amp; Redis</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Chuy&ecirc;̉n session sang Redis (scale multi-instance)
+session_redis("redis.cluster:6379", "password", "0");
+
+// S&uogon;̉ d&uogon;̣ng nh&uogon; b&igrave;nh th&uogon;&ocirc;̀ng
+session_start();
+session_set("user_id", 42);
+$uid = session_get("user_id"); // 42
+session_destroy();</code></pre>
+        </div>
+
+        <h3>Database Pool Configuration</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// db_pool_config(maxOpen, maxIdle, connMaxLifeSec)
+db_pool_config(50, 10, 300);
+db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");</code></pre>
+        </div>
+
+        <h3>Redis Configuration</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// redis_config(poolSize, timeoutMs, dialTimeoutMs)
+redis_config(20, 5000, 3000);
+redis_connect("redis.cluster:6379", "password", "0");</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="config-reload">
+        <h2><span class="section-num">21g</span> Config Reload</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              ch&eacute;p</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// &ETH;&acirc;ng k&yacute; callback khi config reload
+config_on_reload(function() {
+    global $config;
+    $config = json_decode(file_get_contents("config.json"));
+    log_info("config reloaded");
+});
+
+// Trigger reload
+config_reload();
+
+// Unix: kill -SIGHUP &lt;pid&gt; c&ugrave;ng trigger</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── CLI -->
+      <section class="doc-section" id="cli">
+        <h2><span class="section-num">21</span> CLI Reference</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Lệnh</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>gracepl run &lt;file&gt;</code></td>
+              <td>Compile &amp; chạy file .gp</td>
+            </tr>
+            <tr>
+              <td><code>gracepl test &lt;dir&gt;</code></td>
+              <td>Chạy tất cả <code>*_test.gp</code> trong thư mục</td>
+            </tr>
+            <tr>
+              <td><code>gracepl repl</code></td>
+              <td>Interactive REPL</td>
+            </tr>
+            <tr>
+              <td><code>gracepl lsp</code></td>
+              <td>Language Server (stdio, VS Code)</td>
+            </tr>
+            <tr>
+              <td><code>gracepl debug &lt;file&gt;</code></td>
+              <td>DAP debugger (VS Code breakpoints)</td>
+            </tr>
+            <tr>
+              <td><code>gracepl fmt -w &lt;file&gt;</code></td>
+              <td>Format code (ghi đè file)</td>
+            </tr>
+            <tr>
+              <td><code>gracepl lint &lt;file&gt;</code></td>
+              <td>Static analysis</td>
+            </tr>
+            <tr>
+              <td><code>gracepl profile &lt;file&gt;</code></td>
+              <td>Profiler sampling</td>
+            </tr>
+            <tr>
+              <td><code>gracepl build &lt;file&gt;</code></td>
+              <td>Build standalone binary</td>
+            </tr>
+            <tr>
+              <td><code>gracepl emit &lt;file&gt;</code></td>
+              <td>Disassemble bytecode</td>
+            </tr>
+            <tr>
+              <td><code>gracepl tokens &lt;file&gt;</code></td>
+              <td>Dump lexer tokens</td>
+            </tr>
+            <tr>
+              <td><code>gracepl init [name]</code></td>
+              <td>Tạo grace.json</td>
+            </tr>
+            <tr>
+              <td><code>gracepl install [pkg]</code></td>
+              <td>Cài package</td>
+            </tr>
+            <tr>
+              <td><code>gracepl remove pkg</code></td>
+              <td>Gỡ package</td>
+            </tr>
+            <tr>
+              <td><code>gracepl list</code></td>
+              <td>Danh sách packages</td>
+            </tr>
+            <tr>
+              <td><code>gracepl stop [port]</code></td>
+              <td>Dừng HTTP server theo port</td>
+            </tr>
+            <tr>
+              <td><code>gracepl restart [port]</code></td>
+              <td>Restart HTTP server</td>
+            </tr>
+            <tr>
+              <td><code>gracepl --version</code></td>
+              <td>In phiên bản</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── TESTING -->
+      <section class="doc-section" id="testing">
+        <h2><span class="section-num">22</span> Testing</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">example_test.gp</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// File có tên *_test.gp được test runner phát hiện tự động
+import "../lib/test.gp";
+
+describe("Math", function() {
+    it("cộng hai số", function() {
+        assert_eq(1 + 1, 2);
+        assert_eq(10 + 20, 30);
+    });
+
+    it("handles edge cases", function() {
+        assert_eq(0 + 0, 0);
+        assert_eq(-1 + 1, 0);
+    });
+});
+
+describe("String", function() {
+    it("converts to uppercase", function() {
+        assert_eq(strtoupper("hello"), "HELLO");
+    });
+
+    it("contains substring", function() {
+        assert_true(str_contains("gracepl", "grace"));
+    });
+});
+
+describe("Exceptions", function() {
+    it("catches thrown errors", function() {
+        assert_throws(function() {
+            throw new Error("test error");
+        });
+    });
+});</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button>
+          </div>
+          <pre><code class="language-bash">gracepl test ./examples/
+# [PASS] cộng hai số       (0.12ms)
+# [PASS] string operations  (0.08ms)
+# [PASS] exception được ném (0.05ms)
+# [PASS] array operations   (0.09ms)
+# ─────────────────────────────────────
+# 4/4 passed in 0.34ms</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── PKG -->
+      <section class="doc-section" id="pkg">
+        <h2><span class="section-num">23</span> Package Manager</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button>
+          </div>
+          <pre><code class="language-bash">gracepl pkg install gracepl/http-utils
+gracepl pkg install gracepl/validator
+gracepl pkg install gracepl/jwt
+gracepl pkg list
+# gracepl/http-utils   v1.2.0
+# gracepl/validator    v2.0.1
+# gracepl/jwt          v1.0.0</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Package được cài trong vendor/
+$validator = import_as("vendor/gracepl/validator/main.gp");
+
+$errors = $validator["validate"]($data, [
+    "email"    => "required|email",
+    "password" => "required|min:8",
+    "age"      => "integer|min:18"
+]);
+
+if (count($errors) > 0) {
+    http_json($res, ["errors" => $errors], 422);
+    return;
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── HTTP -->
+      <section class="doc-section" id="http">
+        <h2><span class="section-num">24</span> HTTP &amp; Web</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── HTTP Server ────────────────────────────────
+http_handle("/", function($req) {
+    http_json(["message" =&gt; "Hello from GracePL!"]);
+});
+
+http_handle("/users/:id", function($req) {
+    $id = $req["params"]["id"];
+    $user = db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
+    if (!$user) { return http_json(["error" =&gt; "Not found"], 404); }
+    http_json($user);
+});
+
+// Production middleware stack
+http_request_id();                            // unique request ID
+http_panic_recover();                         // catch panics
+http_cors_whitelist(["https://myapp.com"]);   // CORS whitelist
+http_rate_limit(100, 60);                     // 100 req/min
+http_security_headers();                      // security headers
+http_gzip();                                  // compression
+metrics_enable("/metrics");                   // Prometheus
+http_health("/health");                       // health check
+log_format("json");                           // structured logs
+
+http_serve(":8080");
+
+// ── WebSocket ──────────────────────────────────
+// Giới hạn dung lượng nhận tối đa mỗi tin nhắn/frame (vd: 10MB)
+ws_set_read_limit(10485760);
+
+listen("/chat") {
+    on("connect", function($conn) {
+        ws_room_join("general");
+    });
+    on("message", function($data) {
+        // Broadcast string hoặc binary raw
+        ws_room_broadcast("general", $data["text"]);
+    });
+}
+
+// ── HTTP Client ────────────────────────────────
+$res = http_get("https://api.example.com/data");
+$post = http_post("https://api.example.com/users", [
+    "headers" =&gt; ["Content-Type" =&gt; "application/json"],
+    "body"    =&gt; json_encode(["name" =&gt; "Alice"])
+]);</code></pre>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── TEMPLATE ENGINE -->
+      <section class="doc-section" id="templates">
+        <h2><span class="section-num">24b</span> Template Engine</h2>
+        <p>GracePL có template engine tích hợp hỗ trợ variable substitution, conditionals, loops và includes.</p>
+        <div class="callout callout-tip">
+          <b>Hiệu năng:</b> Đi kèm cơ chế in-memory caching tự động (kiểm tra theo ModTime của file), giúp tăng tốc
+          script render và loại bỏ thao tác đọc đĩa không cần thiết.
+        </div>
+
+        <h3>Cú pháp template</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Cú pháp</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>{{key}}</code></td>
+              <td>Thay bằng giá trị biến (hỗ trợ cả <code>{{$key}}</code>)</td>
+            </tr>
+            <tr>
+              <td><code>{{if key}} ... {{endif}}</code></td>
+              <td>Conditional block (truthy: non-empty, non-zero, non-false)</td>
+            </tr>
+            <tr>
+              <td><code>{{if !key}} ... {{endif}}</code></td>
+              <td>Negated conditional</td>
+            </tr>
+            <tr>
+              <td><code>{{if key}} ... {{else}} ... {{endif}}</code></td>
+              <td>Conditional với else branch</td>
+            </tr>
+            <tr>
+              <td><code>{{foreach items as item}} ... {{end}}</code></td>
+              <td>Loop qua array/map</td>
+            </tr>
+            <tr>
+              <td><code>{{include "path"}}</code></td>
+              <td>Inline file template khác (dùng chung data)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Hàm render</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Hàm</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>render($file, $vars)</code></td>
+              <td>Render template từ file với biến</td>
+            </tr>
+            <tr>
+              <td><code>render_string($tmpl, $vars)</code></td>
+              <td>Render template từ chuỗi</td>
+            </tr>
+            <tr>
+              <td><code>include($file)</code></td>
+              <td>Đọc file thuần (không thay biến)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Ví dụ: Layout với include</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">templates/base.html</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;{{title}} — MyApp&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+    {{include "templates/header.html"}}
+    &lt;main&gt;{{content}}&lt;/main&gt;
+    {{include "templates/footer.html"}}
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>Ví dụ: Conditional + Loop</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">templates/list.html</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code>&lt;h1&gt;{{page_title}}&lt;/h1&gt;
+{{if has_items}}
+&lt;ul&gt;
+    {{foreach items as item}}
+    &lt;li&gt;{{item}}&lt;/li&gt;
+    {{end}}
+&lt;/ul&gt;
+{{else}}
+&lt;p&gt;Không có item nào.&lt;/p&gt;
+{{endif}}</code></pre>
+        </div>
+
+        <h3>Pattern: Render nested objects</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$posts = [
+    ["title" =&gt; "Post 1", "date" =&gt; "2026-01-15"],
+    ["title" =&gt; "Post 2", "date" =&gt; "2026-01-20"]
+];
+
+$cards = "";
+foreach ($posts as $post) {
+    $cards .= render("templates/card.html", $post);
+}
+
+$html = render("templates/list.html", [
+    "page_title" =&gt; "Blog",
+    "cards" =&gt; $cards
+]);</code></pre>
+        </div>
+        <div class="callout callout-tip">
+          <b>Tip:</b> Khi mỗi item là map có nhiều fields (title, date, url...), render từng item riêng rồi truyền HTML
+          vào template cha qua biến. Đây là pattern khuyên dùng cho nested data.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── STDLIB SECTIONS -->
+      <section class="doc-section" id="stdlib-string">
+        <h2><span class="section-num">25</span> Thư viện: String</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Hàm</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>strlen($s)</code></td>
+              <td>Độ dài chuỗi (bytes)</td>
+            </tr>
+            <tr>
+              <td><code>mb_strlen($s)</code></td>
+              <td>Độ dài chuỗi (ký tự UTF-8)</td>
+            </tr>
+            <tr>
+              <td><code>strtoupper/lower($s)</code></td>
+              <td>Chuyển hoa/thường</td>
+            </tr>
+            <tr>
+              <td><code>substr($s, $start, $len)</code></td>
+              <td>Lấy chuỗi con</td>
+            </tr>
+            <tr>
+              <td><code>str_replace($s, $r, $h)</code></td>
+              <td>Thay thế chuỗi</td>
+            </tr>
+            <tr>
+              <td><code>strpos($h, $n)</code></td>
+              <td>Vị trí chuỗi (false nếu không có)</td>
+            </tr>
+            <tr>
+              <td><code>trim($s)</code></td>
+              <td>Xóa khoảng trắng đầu/cuối</td>
+            </tr>
+            <tr>
+              <td><code>explode($d, $s)</code></td>
+              <td>Split thành array</td>
+            </tr>
+            <tr>
+              <td><code>implode($d, $a)</code></td>
+              <td>Join array thành string</td>
+            </tr>
+            <tr>
+              <td><code>str_contains($s, $n)</code></td>
+              <td>Kiểm tra chứa chuỗi con</td>
+            </tr>
+            <tr>
+              <td><code>str_pad($s, $n, $p, $t)</code></td>
+              <td>Pad chuỗi</td>
+            </tr>
+            <tr>
+              <td><code>sprintf($fmt, ...)</code></td>
+              <td>Format string</td>
+            </tr>
+            <tr>
+              <td><code>preg_match($p, $s, &amp;$m)</code></td>
+              <td>Regex match</td>
+            </tr>
+            <tr>
+              <td><code>preg_replace($p, $r, $s)</code></td>
+              <td>Regex replace</td>
+            </tr>
+            <tr>
+              <td><code>md5/sha1/sha256($s)</code></td>
+              <td>Hash chuỗi</td>
+            </tr>
+            <tr>
+              <td><code>base64_encode/decode($s)</code></td>
+              <td>Base64</td>
+            </tr>
+            <tr>
+              <td><code>urlencode/decode($s)</code></td>
+              <td>URL encode/decode</td>
+            </tr>
+            <tr>
+              <td><code>htmlspecialchars($s)</code></td>
+              <td>Escape HTML</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="stdlib-array">
+        <h2><span class="section-num">26</span> Thư viện: Array</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Hàm</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>count($a)</code></td>
+              <td>Số phần tử</td>
+            </tr>
+            <tr>
+              <td><code>array_push($a, $v)</code></td>
+              <td>Thêm vào cuối</td>
+            </tr>
+            <tr>
+              <td><code>array_pop($a)</code></td>
+              <td>Xóa và trả về phần tử cuối</td>
+            </tr>
+            <tr>
+              <td><code>array_shift($a)</code></td>
+              <td>Xóa và trả về phần tử đầu</td>
+            </tr>
+            <tr>
+              <td><code>array_unshift($a, $v)</code></td>
+              <td>Thêm vào đầu</td>
+            </tr>
+            <tr>
+              <td><code>array_map($fn, $a)</code></td>
+              <td>Map qua mỗi phần tử</td>
+            </tr>
+            <tr>
+              <td><code>array_filter($a, $fn)</code></td>
+              <td>Lọc phần tử</td>
+            </tr>
+            <tr>
+              <td><code>array_reduce($a, $fn, $init)</code></td>
+              <td>Reduce</td>
+            </tr>
+            <tr>
+              <td><code>array_merge($a, $b)</code></td>
+              <td>Gộp hai mảng</td>
+            </tr>
+            <tr>
+              <td><code>array_unique($a)</code></td>
+              <td>Xóa trùng</td>
+            </tr>
+            <tr>
+              <td><code>array_keys($m)</code></td>
+              <td>Lấy tất cả keys</td>
+            </tr>
+            <tr>
+              <td><code>array_values($a)</code></td>
+              <td>Lấy tất cả values</td>
+            </tr>
+            <tr>
+              <td><code>array_chunk($a, $n)</code></td>
+              <td>Chia thành chunks</td>
+            </tr>
+            <tr>
+              <td><code>in_array($v, $a)</code></td>
+              <td>Kiểm tra phần tử tồn tại</td>
+            </tr>
+            <tr>
+              <td><code>sort/rsort($a)</code></td>
+              <td>Sắp xếp tăng/giảm</td>
+            </tr>
+            <tr>
+              <td><code>usort($a, $fn)</code></td>
+              <td>Sắp xếp theo hàm so sánh</td>
+            </tr>
+            <tr>
+              <td><code>array_sum($a)</code></td>
+              <td>Tổng các phần tử</td>
+            </tr>
+            <tr>
+              <td><code>array_combine($keys, $vals)</code></td>
+              <td>Tạo map từ 2 arrays</td>
+            </tr>
+            <tr>
+              <td><code>array_flip($a)</code></td>
+              <td>Đổi key↔value</td>
+            </tr>
+            <tr>
+              <td><code>array_slice($a, $off, $len)</code></td>
+              <td>Cắt mảng</td>
+            </tr>
+            <tr>
+              <td><code>array_splice($a, $off, $n, $r)</code></td>
+              <td>Xóa và thay thế</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="stdlib-math">
+        <h2><span class="section-num">27</span> Thư viện: Math</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Hàm / Hằng</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>M_PI</code></td>
+              <td>π ≈ 3.14159…</td>
+            </tr>
+            <tr>
+              <td><code>M_E</code></td>
+              <td>e ≈ 2.71828…</td>
+            </tr>
+            <tr>
+              <td><code>abs($n)</code></td>
+              <td>Giá trị tuyệt đối</td>
+            </tr>
+            <tr>
+              <td><code>ceil($n) / floor($n)</code></td>
+              <td>Làm tròn lên/xuống</td>
+            </tr>
+            <tr>
+              <td><code>round($n, $p)</code></td>
+              <td>Làm tròn p chữ số thập phân</td>
+            </tr>
+            <tr>
+              <td><code>sqrt($n)</code></td>
+              <td>Căn bậc hai</td>
+            </tr>
+            <tr>
+              <td><code>pow($b, $e)</code></td>
+              <td>Lũy thừa</td>
+            </tr>
+            <tr>
+              <td><code>log($n) / log10($n)</code></td>
+              <td>Logarithm tự nhiên / cơ số 10</td>
+            </tr>
+            <tr>
+              <td><code>sin/cos/tan($r)</code></td>
+              <td>Lượng giác (radian)</td>
+            </tr>
+            <tr>
+              <td><code>asin/acos/atan($n)</code></td>
+              <td>Lượng giác ngược</td>
+            </tr>
+            <tr>
+              <td><code>atan2($y, $x)</code></td>
+              <td>Arctangent 2 chiều</td>
+            </tr>
+            <tr>
+              <td><code>min($a, $b, …)</code></td>
+              <td>Giá trị nhỏ nhất</td>
+            </tr>
+            <tr>
+              <td><code>max($a, $b, …)</code></td>
+              <td>Giá trị lớn nhất</td>
+            </tr>
+            <tr>
+              <td><code>rand($min, $max)</code></td>
+              <td>Số ngẫu nhiên nguyên</td>
+            </tr>
+            <tr>
+              <td><code>frand()</code></td>
+              <td>Số ngẫu nhiên float [0,1)</td>
+            </tr>
+            <tr>
+              <td><code>intdiv($a, $b)</code></td>
+              <td>Chia nguyên</td>
+            </tr>
+            <tr>
+              <td><code>fmod($a, $b)</code></td>
+              <td>Chia lấy dư float</td>
+            </tr>
+            <tr>
+              <td><code>number_format($n, $d)</code></td>
+              <td>Format số với dấu phẩy</td>
+            </tr>
+            <tr>
+              <td><code>is_nan($n) / is_inf($n)</code></td>
+              <td>Kiểm tra NaN / Infinity</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="stdlib-file">
+        <h2><span class="section-num">28</span> Thư viện: File I/O</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Đọc / ghi
+$content = file_get_contents("data.txt");
+file_put_contents("out.txt", $content);
+file_put_contents("log.txt", "Line\n", FILE_APPEND);
+
+// Dòng
+$lines = file("data.txt");  // array các dòng
+foreach ($lines as $line) { echo trim($line); }
+
+// Kiểm tra
+file_exists("path")
+is_file("path")
+is_dir("path")
+
+// Thư mục
+mkdir("new_dir", 0755, true);   // recursive
+rmdir("dir");
+scandir("dir");     // [".", "..", "file.txt", ...]
+
+// Copy / Move / Delete
+copy("src", "dst");
+rename("old", "new");
+unlink("file.txt");
+
+// Đường dẫn
+basename("/path/to/file.txt");   // "file.txt"
+dirname("/path/to/file.txt");    // "/path/to"
+realpath("../relative");
+pathinfo("file.txt.gz");         // ["extension" => "gz", ...]
+
+// File size / permissions
+filesize("file.txt");
+filemtime("file.txt");  // timestamp sửa đổi
+chmod("file.txt", 0644);</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="stdlib-json">
+        <h2><span class="section-num">29</span> Thư viện: JSON</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$data = ["name" => "Alice", "age" => 30, "tags" => ["go", "php"]];
+
+// Encode
+$json = json_encode($data);
+// {"name":"Alice","age":30,"tags":["go","php"]}
+
+$pretty = json_encode($data, JSON_PRETTY_PRINT);
+
+// Decode → map/array
+$map = json_decode($json);
+echo $map["name"];   // Alice
+echo $map["tags"][0]; // go
+
+// Validate
+json_valid('{"key":"val"}');  // true
+json_valid('bad json');        // false
+
+// Từ file
+$config = json_decode(file_get_contents("config.json"));
+file_put_contents("output.json", json_encode($result, JSON_PRETTY_PRINT));</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="stdlib-db">
+        <h2><span class="section-num">30</span> Thư viện: Database</h2>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
+              chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Kết nối
+db_connect("mysql://user:pass@localhost:3306/mydb");
+db_connect("postgres://user:pass@localhost/mydb");
+db_connect("sqlite://./data.db");
+
+// Query
+$rows = db_query("SELECT id, name FROM users WHERE active = ?", [1]);
+foreach ($rows as $row) {
+    echo "{$row['id']}: {$row['name']}\n";
+}
+
+// Single row
+$user = db_query_row("SELECT * FROM users WHERE id = ?", [42]);
+
+// Single value
+$count = db_query_value("SELECT COUNT(*) FROM users");
+
+// Insert
+$id = db_insert("users", [
+    "name"  => "Alice",
+    "email" => "alice@example.com"
+]);
+echo $id; // auto-increment id
+
+// Update
+$affected = db_update("users", ["name" => "Alice Updated"], "id = ?", [42]);
+
+// Delete
+$deleted = db_delete("users", "id = ?", [42]);
+
+// Raw execute
+db_execute("CREATE TABLE IF NOT EXISTS logs (id INT AUTO_INCREMENT, msg TEXT)");
+
+// Transaction
+db_transaction(function() {
+    db_execute("UPDATE accounts SET balance = balance - 100 WHERE id = 1");
+    db_execute("UPDATE accounts SET balance = balance + 100 WHERE id = 2");
+});
+
+// Prepared statements
+$stmt = db_prepare("INSERT INTO logs (msg) VALUES (?)");
+for ($i = 0; $i < 1000; $i++) {
+    db_stmt_exec($stmt, ["log message $i"]);
+}
+db_stmt_close($stmt);</code></pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="stdlib-chan">
+        <h2><span class="section-num">31</span> Thư viện: Channel &amp; Sync</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Hàm</th>
+              <th>Mô tả</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>chan_make($size?)</code></td>
+              <td>Tạo channel (size=64 nếu bỏ)</td>
+            </tr>
+            <tr>
+              <td><code>chan_send($ch, $v)</code></td>
+              <td>Gửi giá trị</td>
+            </tr>
+            <tr>
+              <td><code>chan_recv($ch)</code></td>
+              <td>Nhận giá trị (blocking)</td>
+            </tr>
+            <tr>
+              <td><code>chan_try_recv($ch)</code></td>
+              <td>Nhận không blocking → [$v, $ok]</td>
+            </tr>
+            <tr>
+              <td><code>chan_close($ch)</code></td>
+              <td>Đóng channel</td>
+            </tr>
+            <tr>
+              <td><code>chan_len($ch)</code></td>
+              <td>Số items đang đợi trong buffer</td>
+            </tr>
+            <tr>
+              <td><code>wg_make()</code></td>
+              <td>Tạo WaitGroup</td>
+            </tr>
+            <tr>
+              <td><code>wg_add($wg, $n)</code></td>
+              <td>Thêm n vào counter</td>
+            </tr>
+            <tr>
+              <td><code>wg_done($wg)</code></td>
+              <td>Trừ 1 từ counter</td>
+            </tr>
+            <tr>
+              <td><code>wg_wait($wg)</code></td>
+              <td>Chờ counter về 0</td>
+            </tr>
+            <tr>
+              <td><code>mutex_make()</code></td>
+              <td>Tạo Mutex</td>
+            </tr>
+            <tr>
+              <td><code>mutex_lock($m)</code></td>
+              <td>Lock (blocking)</td>
+            </tr>
+            <tr>
+              <td><code>mutex_unlock($m)</code></td>
+              <td>Unlock</td>
+            </tr>
+            <tr>
+              <td><code>mutex_try_lock($m)</code></td>
+              <td>Try lock → bool</td>
+            </tr>
+            <tr>
+              <td><code>rwmutex_make()</code></td>
+              <td>Tạo RWMutex</td>
+            </tr>
+            <tr>
+              <td><code>rwmutex_lock/unlock($m)</code></td>
+              <td>Write lock/unlock</td>
+            </tr>
+            <tr>
+              <td><code>rwmutex_rlock/runlock($m)</code></td>
+              <td>Read lock/unlock</td>
+            </tr>
+            <tr>
+              <td><code>ctx_make()</code></td>
+              <td>Tạo context</td>
+            </tr>
+            <tr>
+              <td><code>ctx_cancel($ctx)</code></td>
+              <td>Cancel context</td>
+            </tr>
+            <tr>
+              <td><code>ctx_with_timeout($ms)</code></td>
+              <td>Context với timeout (ms)</td>
+            </tr>
+            <tr>
+              <td><code>ctx_done($ctx)</code></td>
+              <td>Kiểm tra đã done?</td>
+            </tr>
+            <tr>
+              <td><code>ctx_wait_done($ctx)</code></td>
+              <td>Block tới khi done</td>
+            </tr>
+            <tr>
+              <td><code>sleep_ms($ms)</code></td>
+              <td>Ngủ $ms mili-giây</td>
+            </tr>
+            <tr>
+              <td><code>go_run($fn, $args)</code></td>
+              <td>Chạy callable trong goroutine</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div>© 2026 GracePL. Mã nguồn mở — MIT License.</div>
+    <div>
+      <a href="https://github.com/ghoullp/gracepl-lang">GitHub</a> ·
+      <a href="../LANGUAGE_SPEC.md">Language Spec</a> ·
+      <a href="../LIMITATIONS.md">Changelog</a>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+
+</html>
