@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Học GracePL — Hướng dẫn cho người mới bắt đầu</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/learn.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">
+      <span class="logo-text"><span>Grace</span>PL</span>
+    </div>
+    <div class="header-right">
+      <span class="header-badge">v2.0</span>
+      <a class="header-link" href="/">Tài liệu</a>
+      <a class="header-link" href="/learn" style="color:#a78bfa;font-weight:600">Tutorial</a>
+      <a class="header-link" href="https://github.com/ghoullp/gracepl-lang">GitHub</a>
+    </div>
+    <button class="hamburger" id="menu-toggle">☰</button>
+  </header>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="search-wrap">
+        <input id="learn-search" type="search" placeholder="Tìm bài học… (phím /)" autocomplete="off" />
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Bắt đầu</div>
+        <a href="#gioi-thieu">🎯 GracePL là gì?</a>
+        <a href="#cai-dat">📦 Cài đặt</a>
+        <a href="#hello-world">👋 Hello World</a>
+        <a href="#chay-script">▶ Chạy script</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Nền tảng</div>
+        <a href="#bien">📌 Biến &amp; Kiểu dữ liệu</a>
+        <a href="#toan-tu">➕ Toán tử</a>
+        <a href="#string">✏️ Xử lý chuỗi</a>
+        <a href="#dieu-kien">⚖️ Điều kiện if/else</a>
+        <a href="#vong-lap">🔁 Vòng lặp</a>
+        <a href="#ham">📦 Hàm</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Cấu trúc dữ liệu</div>
+        <a href="#mang">📋 Mảng (Array)</a>
+        <a href="#map">🗂️ Map</a>
+        <a href="#json">🔁 JSON</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">OOP</div>
+        <a href="#class">🏛️ Class &amp; Object</a>
+        <a href="#ke-thua">🧬 Kế thừa</a>
+        <a href="#interface">📜 Interface</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Web cơ bản</div>
+        <a href="#http-server">🌐 HTTP Server đầu tiên</a>
+        <a href="#route-params">🛤️ Route &amp; Params</a>
+        <a href="#json-api">🔌 Xây dựng JSON API</a>
+        <a href="#html-template">🖼️ Render HTML Template</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Thực chiến</div>
+        <a href="#db-crud">🗄️ CRUD với Database</a>
+        <a href="#form-validation">✅ Form &amp; Validation</a>
+        <a href="#auth-jwt">🔐 Xác thực JWT</a>
+        <a href="#file-upload">📁 Upload File</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Nâng cao</div>
+        <a href="#concurrency">⚡ Goroutine &amp; Channel</a>
+        <a href="#error-handling">🚨 Xử lý lỗi</a>
+        <a href="#project">🏗️ Dự án thực tế</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Liên kết</div>
+        <a href="/">📚 Tài liệu đầy đủ</a>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main learn-main">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-badge">📚 Tutorial cho người mới · 2026</div>
+        <h1>Học lập trình với <span>GracePL</span></h1>
+        <p>Hướng dẫn từng bước từ <strong>zero đến hero</strong> — dù bạn chưa bao giờ lập trình, hay đến từ PHP/Python/JavaScript, bạn đều có thể bắt đầu ở đây.</p>
+        <div class="hero-cta">
+          <a href="#gioi-thieu" class="btn btn-primary">📖 Bắt đầu học</a>
+          <a href="/" class="btn btn-secondary">📚 Xem tài liệu đầy đủ</a>
+        </div>
+        <div class="learn-progress-bar">
+          <div class="progress-label">Tiến độ bài học</div>
+          <div class="progress-track"><div class="progress-fill" id="learn-progress" style="width:0%"></div></div>
+          <div class="progress-text" id="progress-text">0 / 17 bài đã xem</div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 1 -->
+      <section class="doc-section learn-lesson" id="gioi-thieu" data-lesson="1">
+        <h2><span class="lesson-badge">Bài 1</span> GracePL là gì?</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu bài này:</b> Hiểu GracePL là gì, tại sao nên học, và nó khác gì so với PHP/Python/JavaScript.
+        </div>
+
+        <p><strong>GracePL</strong> là ngôn ngữ lập trình <em>production-ready</em> được thiết kế để:</p>
+        <ul>
+          <li>Có <strong>cú pháp quen thuộc như PHP</strong> — dễ học, dễ đọc</li>
+          <li>Chạy <strong>nhanh như Go</strong> — biên dịch sang bytecode, thực thi bởi VM viết bằng Go</li>
+          <li><strong>Tích hợp sẵn hơn 335 hàm</strong> — HTTP, Database, Redis, JWT, Crypto, WebSocket... không cần cài gói ngoài</li>
+          <li>Hỗ trợ <strong>concurrency thực sự</strong> (goroutine + channel như Go)</li>
+        </ul>
+
+        <h3>So sánh nhanh</h3>
+        <table>
+          <thead><tr><th>Tính năng</th><th>PHP</th><th>Python</th><th>GracePL</th></tr></thead>
+          <tbody>
+            <tr><td>Cú pháp</td><td>✅ Quen thuộc</td><td>✅ Đơn giản</td><td>✅ Giống PHP</td></tr>
+            <tr><td>Tốc độ</td><td>⚠️ Trung bình</td><td>⚠️ Trung bình</td><td>✅ Nhanh (Go VM)</td></tr>
+            <tr><td>HTTP server tích hợp</td><td>❌</td><td>⚠️ Flask/FastAPI</td><td>✅ Có sẵn</td></tr>
+            <tr><td>Database tích hợp</td><td>❌ PDO/MySQLi</td><td>❌ SQLAlchemy</td><td>✅ Có sẵn</td></tr>
+            <tr><td>Concurrency</td><td>❌</td><td>⚠️ asyncio</td><td>✅ Goroutine+Channel</td></tr>
+            <tr><td>Cài đặt</td><td>⚠️ Phức tạp</td><td>⚠️ pip packages</td><td>✅ 1 file executable</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>💡 Bạn đã biết PHP?</b> Tuyệt vời! GracePL dùng <code>$biến</code>, <code>function</code>, <code>foreach</code>, <code>class</code> — bạn sẽ cảm thấy như ở nhà chỉ sau 5 phút.
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="1">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 2 -->
+      <section class="doc-section learn-lesson" id="cai-dat" data-lesson="2">
+        <h2><span class="lesson-badge">Bài 2</span> Cài đặt GracePL</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Cài GracePL và chạy được lệnh <code>gracepl</code> trong terminal.
+        </div>
+
+        <h3>Bước 1: Tải về</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code># Tải binary từ GitHub Releases
+# Windows: gracepl.exe
+# Linux/macOS: gracepl
+
+# Hoặc build từ source (cần Go 1.21+)
+git clone https://github.com/ghoullp/gracepl-lang
+cd gracepl-lang
+go build -o gracepl .</code></pre>
+        </div>
+
+        <h3>Bước 2: Thêm vào PATH</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash — Linux/macOS</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>sudo mv gracepl /usr/local/bin/
+gracepl --version</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">powershell — Windows</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code># Copy gracepl.exe tới một thư mục trong PATH, ví dụ C:\tools\
+.\gracepl.exe --version</code></pre>
+        </div>
+
+        <h3>Bước 3: Cài VS Code Extension (khuyến nghị)</h3>
+        <p>Tìm kiếm <strong>"GracePL"</strong> trong VS Code Extension Marketplace để có:</p>
+        <ul>
+          <li>Syntax highlighting</li>
+          <li>Code completion (IntelliSense)</li>
+          <li>Tích hợp debugger</li>
+          <li>Run script bằng phím F5</li>
+        </ul>
+
+        <div class="callout callout-success">
+          <b>✅ Kiểm tra thành công:</b> Chạy <code>gracepl --version</code> trong terminal — nếu thấy số version là xong!
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="2">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 3 -->
+      <section class="doc-section learn-lesson" id="hello-world" data-lesson="3">
+        <h2><span class="lesson-badge">Bài 3</span> Hello World — Chương trình đầu tiên</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Tạo và chạy file GracePL đầu tiên của bạn.
+        </div>
+
+        <h3>Tạo file hello.gp</h3>
+        <p>Mọi file GracePL bắt đầu bằng thẻ mở <code>&lt;gp&gt;</code> — tương tự <code>&lt;?php</code> trong PHP.</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">hello.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+echo "Xin chào thế giới!\n";
+echo "Tôi đang học GracePL 🚀\n";
+
+// Biến và nội suy chuỗi
+$ten = "Alice";
+$tuoi = 25;
+echo "Tên: $ten, Tuổi: $tuoi\n";
+
+// Cũng có thể dùng print
+$pi = 3.14159;
+echo "Pi = $pi\n";</code></pre>
+        </div>
+
+        <h3>Chạy script</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">terminal</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>gracepl run hello.gp</code></pre>
+        </div>
+
+        <div class="try-it-box">
+          <div class="try-it-title">📝 Kết quả mong đợi</div>
+          <pre class="try-it-output">Xin chào thế giới!
+Tôi đang học GracePL 🚀
+Tên: Alice, Tuổi: 25
+Pi = 3.14159</pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <b>💡 Chú ý:</b> <code>\n</code> là ký tự xuống dòng (newline). Nếu muốn in không xuống dòng, bỏ <code>\n</code> đi. Bạn cũng có thể dùng <code>println("text")</code> — tự động thêm xuống dòng.
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="3">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 4 -->
+      <section class="doc-section learn-lesson" id="chay-script" data-lesson="4">
+        <h2><span class="lesson-badge">Bài 4</span> Các lệnh CLI cơ bản</h2>
+
+        <table>
+          <thead><tr><th>Lệnh</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>gracepl run script.gp</code></td><td>Chạy script</td></tr>
+            <tr><td><code>gracepl run script.gp -- arg1 arg2</code></td><td>Chạy với arguments</td></tr>
+            <tr><td><code>gracepl check script.gp</code></td><td>Kiểm tra lỗi cú pháp không chạy</td></tr>
+            <tr><td><code>gracepl debug script.gp</code></td><td>Chạy với VS Code debugger (DAP)</td></tr>
+            <tr><td><code>gracepl test ./tests/</code></td><td>Chạy tất cả test trong thư mục</td></tr>
+            <tr><td><code>gracepl pkg install name</code></td><td>Cài package</td></tr>
+            <tr><td><code>gracepl repl</code></td><td>Chế độ tương tác (REPL)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>REPL — Thử code trực tiếp</h3>
+        <p>REPL (Read-Eval-Print Loop) là cách học nhanh nhất — gõ code và xem kết quả ngay:</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">terminal</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>$ gracepl repl
+gracepl> $x = 10 + 20
+gracepl> echo $x      // 30
+gracepl> strlen("hello")  // 5
+gracepl> exit</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="4">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 5 -->
+      <section class="doc-section learn-lesson" id="bien" data-lesson="5">
+        <h2><span class="lesson-badge">Bài 5</span> Biến &amp; Kiểu dữ liệu</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Hiểu các kiểu dữ liệu cơ bản và cách khai báo biến.
+        </div>
+
+        <p>Biến trong GracePL bắt đầu bằng ký tự <code>$</code>. Không cần khai báo kiểu — ngôn ngữ tự nhận diện.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">types.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Số nguyên (int) ──────────────────────────
+$tuoi = 25;
+$so_am = -10;
+$hexa = 0xFF;         // 255 — hệ thập lục phân
+
+// ── Số thực (float) ──────────────────────────
+$pi = 3.14159;
+$gia = 99.99;
+
+// ── Chuỗi (string) ───────────────────────────
+$ten = "Alice";
+$chao = 'Xin chào';  // nháy đơn không nội suy biến
+$msg = "Tên tôi là $ten"; // nháy kép: nội suy $ten vào chuỗi
+
+// ── Boolean ─────────────────────────────────
+$dung = true;
+$sai  = false;
+
+// ── Null ─────────────────────────────────────
+$rong = null;
+
+// ── Kiểm tra kiểu ───────────────────────────
+echo gettype($tuoi);  // "integer"
+echo gettype($pi);    // "double"
+echo gettype($ten);   // "string"
+echo gettype($dung);  // "boolean"
+echo gettype($rong);  // "NULL"
+
+echo is_int($tuoi);     // true
+echo is_float($pi);     // true
+echo is_string($ten);   // true
+echo is_null($rong);    // true
+
+// ── Chuyển kiểu ─────────────────────────────
+$str_num = "42";
+$so = intval($str_num);    // → 42 (int)
+$fl  = floatval("3.14");  // → 3.14 (float)
+$st  = strval(123);       // → "123" (string)</code></pre>
+        </div>
+
+        <h3>Phạm vi biến (Scope)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">scope.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$toan_cuc = "Tôi ở ngoài function";
+
+function sayHello() {
+    // ✅ Closure capture: dùng use để truy cập biến ngoài
+    echo "Hello!\n";
+    // KHÔNG thể truy cập $toan_cuc trực tiếp
+}
+
+// Dùng closure với use để capture biến ngoài
+$greet = function($ten) use ($toan_cuc) {
+    echo "Xin chào $ten! ($toan_cuc)\n";
+};
+$greet("Bob");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="5">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 6 -->
+      <section class="doc-section learn-lesson" id="toan-tu" data-lesson="6">
+        <h2><span class="lesson-badge">Bài 6</span> Toán tử</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">operators.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Số học ───────────────────────────────────
+$a = 10; $b = 3;
+echo $a + $b;   // 13
+echo $a - $b;   // 7
+echo $a * $b;   // 30
+echo $a / $b;   // 3.333...
+echo $a % $b;   // 1   (chia lấy dư)
+echo $a ** $b;  // 1000 (lũy thừa)
+echo intdiv($a, $b); // 3 (chia nguyên)
+
+// ── Gán kết hợp ──────────────────────────────
+$x = 5;
+$x += 3;  // $x = 8
+$x -= 2;  // $x = 6
+$x *= 4;  // $x = 24
+$x /= 3;  // $x = 8
+$x %= 3;  // $x = 2
+$x .= "abc"; // Nối chuỗi: "2abc"
+
+// ── So sánh ──────────────────────────────────
+echo (5 == "5");   // true  (chỉ so giá trị)
+echo (5 === "5");  // false (so giá trị VÀ kiểu)
+echo (5 != 3);    // true
+echo (5 !== "5"); // true
+echo (5 > 3);     // true
+echo (5 >= 5);    // true
+echo (3 < 5);     // true
+echo (3 <= 3);    // true
+
+// ── Logic ────────────────────────────────────
+echo (true && false);  // false  (VÀ)
+echo (true || false);  // true   (HOẶC)
+echo (!true);          // false  (PHỦ ĐỊNH)
+echo (true and false); // false  (cú pháp PHP)
+echo (true or false);  // true
+
+// ── Toán tử 3 ngôi ───────────────────────────
+$diem = 7;
+$ket_qua = ($diem >= 5) ? "Đậu" : "Trượt";
+echo $ket_qua; // "Đậu"
+
+// ── Null coalescing ──────────────────────────
+$ten = null;
+$hien_thi = $ten ?? "Khách"; // nếu null thì dùng "Khách"
+echo $hien_thi; // "Khách"</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="6">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 7 -->
+      <section class="doc-section learn-lesson" id="string" data-lesson="7">
+        <h2><span class="lesson-badge">Bài 7</span> Xử lý chuỗi</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">strings.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$s = "  Hello, GracePL World!  ";
+
+// Độ dài và cắt
+echo strlen($s);         // 26
+echo trim($s);           // "Hello, GracePL World!"
+echo ltrim($s);          // trim trái
+echo rtrim($s);          // trim phải
+
+// Chuyển hoa/thường
+echo strtoupper($s);     // "  HELLO, GRACEPL WORLD!  "
+echo strtolower($s);     // "  hello, gracepl world!  "
+
+// Tìm kiếm
+$pos = strpos($s, "GracePL"); // vị trí đầu tiên (hoặc false)
+if ($pos !== false) {
+    echo "Tìm thấy tại vị trí $pos";
+}
+echo str_contains($s, "World");     // true
+echo str_starts_with($s, "  Hello"); // true
+echo str_ends_with($s, "World!  "); // true
+
+// Thay thế &amp; cắt
+echo str_replace("GracePL", "GP", $s); // thay "GracePL" bằng "GP"
+echo substr($s, 9, 7);  // "GracePL" (bắt đầu tại 9, lấy 7 ký tự)
+echo substr($s, -8);    // "World!  " (từ cuối)
+
+// Tách &amp; ghép
+$parts = explode(", ", "Alice,Bob,Charlie", 3); // tách theo dấu ","
+foreach ($parts as $name) { echo $name . "\n"; }
+
+$bienso = ["Hà Nội", "HCM", "Đà Nẵng"];
+echo implode(" | ", $bienso); // "Hà Nội | HCM | Đà Nẵng"
+
+// Định dạng
+$ten = "Alice"; $diem = 9.5;
+echo sprintf("%-10s: %.1f điểm", $ten, $diem); // "Alice     : 9.5 điểm"
+
+// Regex
+if (preg_match('/^\d{4}-\d{2}-\d{2}$/', "2026-03-07")) {
+    echo "Định dạng ngày hợp lệ!";
+}
+$email_cleaned = preg_replace('/\s+/', '', "user @example. com");
+echo $email_cleaned; // "user@example.com"</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="7">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 8 -->
+      <section class="doc-section learn-lesson" id="dieu-kien" data-lesson="8">
+        <h2><span class="lesson-badge">Bài 8</span> Điều kiện if / else / match</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">conditions.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$diem = 75;
+
+// ── if / elseif / else ──────────────────────
+if ($diem >= 90) {
+    echo "Xuất sắc";
+} elseif ($diem >= 80) {
+    echo "Giỏi";
+} elseif ($diem >= 65) {
+    echo "Khá";
+} elseif ($diem >= 50) {
+    echo "Trung bình";
+} else {
+    echo "Yếu — cần ôn thêm!";
+}
+
+// ── switch ──────────────────────────────────
+$ngay = "Monday";
+switch ($ngay) {
+    case "Monday":
+    case "Tuesday":
+        echo "Đầu tuần";
+        break;
+    case "Wednesday":
+        echo "Giữa tuần";
+        break;
+    case "Saturday":
+    case "Sunday":
+        echo "Cuối tuần 🎉";
+        break;
+    default:
+        echo "Ngày bình thường";
+}
+
+// ── match expression (như switch nhưng gọn hơn) ──
+$status_code = 404;
+$message = match($status_code) {
+    200, 201 => "Thành công",
+    400      => "Yêu cầu không hợp lệ",
+    401, 403 => "Không có quyền",
+    404      => "Không tìm thấy",
+    500      => "Lỗi máy chủ",
+    default  => "Lỗi không xác định ($status_code)"
+};
+echo $message; // "Không tìm thấy"</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="8">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 9 -->
+      <section class="doc-section learn-lesson" id="vong-lap" data-lesson="9">
+        <h2><span class="lesson-badge">Bài 9</span> Vòng lặp</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">loops.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── for ────────────────────────────────────
+for ($i = 1; $i <= 5; $i++) {
+    echo "Lần $i\n";
+}
+
+// ── while ───────────────────────────────────
+$n = 10;
+while ($n > 0) {
+    echo $n . " ";
+    $n -= 3;
+}
+echo "\n"; // 10 7 4 1
+
+// ── do...while — chạy ít nhất 1 lần ──────────
+$count = 0;
+do {
+    echo "Thực hiện lần " . ($count + 1) . "\n";
+    $count++;
+} while ($count < 3);
+
+// ── foreach — duyệt mảng ────────────────────
+$fruits = ["Táo", "Cam", "Chuối", "Xoài"];
+foreach ($fruits as $index => $fruit) {
+    echo "$index: $fruit\n";
+}
+
+// ── foreach với map ─────────────────────────
+$scores = ["Alice" => 95, "Bob" => 80, "Charlie" => 75];
+foreach ($scores as $name => $score) {
+    echo "$name: $score điểm\n";
+}
+
+// ── break &amp; continue ───────────────────────
+for ($i = 1; $i <= 10; $i++) {
+    if ($i == 5) continue; // bỏ qua 5
+    if ($i == 8) break;    // dừng tại 8
+    echo $i . " ";         // 1 2 3 4 6 7
+}</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="9">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 10 -->
+      <section class="doc-section learn-lesson" id="ham" data-lesson="10">
+        <h2><span class="lesson-badge">Bài 10</span> Hàm (Function)</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">functions.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Hàm cơ bản ──────────────────────────────
+function chao($ten) {
+    return "Xin chào, $ten!";
+}
+echo chao("Alice"); // "Xin chào, Alice!"
+
+// ── Giá trị mặc định ─────────────────────────
+function tinhDien($kwh, $gia_don = 1800) {
+    return $kwh * $gia_don;
+}
+echo tinhDien(100);       // 180000
+echo tinhDien(100, 2000); // 200000
+
+// ── Nhiều tham số, toán tử splat ─────────────
+function tong(...$nums) {
+    $s = 0;
+    foreach ($nums as $n) $s += $n;
+    return $s;
+}
+echo tong(1, 2, 3, 4, 5); // 15
+
+// ── Closure (hàm ẩn danh) ──────────────────
+$nhan_doi = function($x) { return $x * 2; };
+echo $nhan_doi(7); // 14
+
+// ── Higher-order functions ───────────────────
+$nums = [1, 2, 3, 4, 5, 6];
+
+$chan  = array_filter($nums, function($n) { return $n % 2 == 0; });
+$binh_phuong = array_map(function($n) { return $n ** 2; }, $nums);
+$tong_tat_ca = array_reduce($nums, function($carry, $n) { return $carry + $n; }, 0);
+
+print_r($chan);        // [2, 4, 6]
+print_r($binh_phuong); // [1, 4, 9, 16, 25, 36]
+echo $tong_tat_ca;    // 21
+
+// ── Trả về nhiều giá trị ─────────────────────
+function chia_for($a, $b) {
+    if ($b == 0) return [null, "Không thể chia cho 0"];
+    return [$a / $b, null];
+}
+[$ket_qua, $loi] = chia_for(10, 3);
+if ($loi !== null) { echo "Lỗi: $loi"; }
+else { echo "Kết quả: $ket_qua"; }</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="10">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 11 -->
+      <section class="doc-section learn-lesson" id="mang" data-lesson="11">
+        <h2><span class="lesson-badge">Bài 11</span> Mảng (Array) &amp; Map</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">arrays.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Mảng số (indexed) ───────────────────────
+$fruits = ["Táo", "Cam", "Xoài"];
+echo $fruits[0];       // "Táo"
+echo count($fruits);   // 3
+$fruits[] = "Chuối";   // thêm vào cuối
+array_push($fruits, "Dâu"); // tương tự
+
+echo array_pop($fruits);    // "Dâu" (xóa &amp; trả về cuối)
+echo array_shift($fruits);  // "Táo" (xóa &amp; trả về đầu)
+array_unshift($fruits, "Nho"); // thêm vào đầu
+
+// ── Sắp xếp ─────────────────────────────────
+$nums = [3, 1, 4, 1, 5, 9, 2, 6];
+sort($nums);  // sắp xếp tăng dần
+rsort($nums); // sắp xếp giảm dần
+echo implode(", ", $nums);
+
+// ── Tìm kiếm ────────────────────────────────
+echo in_array("Cam", $fruits);     // true
+echo array_search("Cam", $fruits); // index của "Cam"
+
+// ── Cắt &amp; nối ──────────────────────────────
+$a = [1, 2, 3]; $b = [4, 5, 6];
+$c = array_merge($a, $b); // [1,2,3,4,5,6]
+$slice = array_slice($c, 1, 3); // [2,3,4]
+
+// ── Mảng kết hợp (Map / Associative Array) ──
+$user = [
+    "ten"   => "Alice",
+    "tuoi"  => 25,
+    "email" => "alice@example.com"
+];
+echo $user["ten"];   // "Alice"
+$user["city"] = "Hà Nội"; // thêm key mới
+
+// Duyệt
+foreach ($user as $key => $val) {
+    echo "$key: $val\n";
+}
+
+// Kiểm tra key tồn tại
+if (array_key_exists("email", $user)) {
+    echo "Email: " . $user["email"];
+}
+echo isset($user["phone"]); // false
+
+// ── array_keys &amp; array_values ──────────────
+$keys = array_keys($user);   // ["ten","tuoi","email","city"]
+$vals = array_values($user); // ["Alice",25,"alice@example.com","Hà Nội"]</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="11">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 12 -->
+      <section class="doc-section learn-lesson" id="json" data-lesson="12">
+        <h2><span class="lesson-badge">Bài 12</span> JSON — Trao đổi dữ liệu</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">json.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Encode: GracePL → JSON string ───────────
+$data = [
+    "ten"    => "Alice",
+    "tuoi"   => 25,
+    "skills" => ["Go", "GracePL", "Docker"],
+    "active" => true
+];
+
+$json = json_encode($data);
+echo $json;
+// {"ten":"Alice","tuoi":25,"skills":["Go","GracePL","Docker"],"active":true}
+
+// JSON đẹp (pretty-print)
+$pretty = json_encode($data, JSON_PRETTY_PRINT);
+echo $pretty;
+
+// ── Decode: JSON string → GracePL ───────────
+$json_str = '{"name":"Bob","age":30,"scores":[85,92,78]}';
+$obj = json_decode($json_str);
+echo $obj["name"];          // "Bob"
+echo $obj["scores"][1];     // 92
+
+// ── Đọc/ghi file JSON ───────────────────────
+// Ghi
+file_put_contents("config.json", json_encode($data, JSON_PRETTY_PRINT));
+
+// Đọc
+$config = json_decode(file_get_contents("config.json"));
+echo $config["ten"]; // "Alice"
+
+// ── Decode array of objects ──────────────────
+$list_json = '[{"id":1,"name":"Apple"},{"id":2,"name":"Banana"}]';
+$items = json_decode($list_json);
+foreach ($items as $item) {
+    echo $item["id"] . ": " . $item["name"] . "\n";
+}</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="12">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 13 -->
+      <section class="doc-section learn-lesson" id="class" data-lesson="13">
+        <h2><span class="lesson-badge">Bài 13</span> Class &amp; OOP (Lập trình hướng đối tượng)</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">oop.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+class User {
+    // Thuộc tính (properties)
+    public $ten;
+    public $email;
+    private $mat_khau; // chỉ truy cập trong class
+    public static $so_nguoi_dung = 0; // class variable
+
+    // Constructor — gọi khi tạo đối tượng
+    public function __construct($ten, $email, $mat_khau) {
+        $this->ten = $ten;
+        $this->email = $email;
+        $this->mat_khau = password_hash($mat_khau);
+        self::$so_nguoi_dung++;
+    }
+
+    // Phương thức thông thường
+    public function xin_chao() {
+        return "Xin chào, tôi là {$this->ten}!";
+    }
+
+    // Getter (truy cập biến private)
+    public function get_email() {
+        return $this->email;
+    }
+
+    // Verify password
+    public function kiem_tra_mat_khau($mat_khau_nhap) {
+        return password_verify($mat_khau_nhap, $this->mat_khau);
+    }
+
+    // Static method — gọi qua tên class không cần tạo đối tượng
+    public static function dem_nguoi_dung() {
+        return self::$so_nguoi_dung;
+    }
+
+    // __toString — hiển thị đối tượng dưới dạng chuỗi
+    public function __toString() {
+        return "User({$this->ten}, {$this->email})";
+    }
+}
+
+// Tạo đối tượng
+$alice = new User("Alice", "alice@example.com", "password123");
+$bob   = new User("Bob",   "bob@example.com",   "secret456");
+
+echo $alice->xin_chao();                    // "Xin chào, tôi là Alice!"
+echo $alice->kiem_tra_mat_khau("password123"); // true
+echo User::dem_nguoi_dung();               // 2
+echo $alice;                               // "User(Alice, alice@example.com)"</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="13">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 14 -->
+      <section class="doc-section learn-lesson" id="ke-thua" data-lesson="14">
+        <h2><span class="lesson-badge">Bài 14</span> Kế thừa &amp; Interface</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">inheritance.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Class cha ───────────────────────────────
+class Animal {
+    public $ten;
+    public function __construct($ten) { $this->ten = $ten; }
+    public function mo_ta() { return "Tôi là {$this->ten}"; }
+    public function keu() { return "..."; }
+}
+
+// ── Kế thừa với extends ──────────────────────
+class Dog extends Animal {
+    public $giong;
+    public function __construct($ten, $giong) {
+        parent::__construct($ten); // gọi constructor cha
+        $this->giong = $giong;
+    }
+    public function keu() { return "Gâu! Gâu!"; } // override
+    public function mo_ta() {
+        return parent::mo_ta() . " ({$this->giong})"; // mở rộng
+    }
+}
+
+class Cat extends Animal {
+    public function keu() { return "Meo! Meo!"; }
+}
+
+$dog = new Dog("Buddy", "Golden Retriever");
+$cat = new Cat("Mimi");
+
+echo $dog->mo_ta();  // "Tôi là Buddy (Golden Retriever)"
+echo $dog->keu();    // "Gâu! Gâu!"
+echo $cat->keu();    // "Meo! Meo!"
+
+// Polymorphism — xử lý các loại khác nhau qua interface chung
+$animals = [$dog, $cat, new Dog("Rex", "German Shepherd")];
+foreach ($animals as $a) {
+    echo $a->ten . ": " . $a->keu() . "\n";
+}</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="14">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 15 -->
+      <section class="doc-section learn-lesson" id="interface" data-lesson="15">
+        <h2><span class="lesson-badge">Bài 15</span> Interface &amp; Trait</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">interface.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Interface: định nghĩa "hợp đồng" — class phải implement
+interface Serializable {
+    public function serialize(): string;
+    public function to_array(): array;
+}
+
+interface Loggable {
+    public function log_info(): string;
+}
+
+// Implement nhiều interface với implements
+class UserProfile implements Serializable, Loggable {
+    public $id;
+    public $ten;
+    public $email;
+
+    public function __construct($id, $ten, $email) {
+        $this->id = $id; $this->ten = $ten; $this->email = $email;
+    }
+
+    public function serialize(): string {
+        return json_encode($this->to_array());
+    }
+    public function to_array(): array {
+        return ["id" => $this->id, "ten" => $this->ten, "email" => $this->email];
+    }
+    public function log_info(): string {
+        return "[User#{$this->id}] {$this->ten} <{$this->email}>";
+    }
+}
+
+$profile = new UserProfile(1, "Alice", "alice@example.com");
+echo $profile->serialize();  // JSON string
+echo $profile->log_info();   // "[User#1] Alice <alice@example.com>"
+
+// Trait: tái sử dụng code không qua kế thừa
+trait Timestamps {
+    public $created_at;
+    public $updated_at;
+
+    public function touch() {
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+    public function just_created() {
+        $this->created_at = date("Y-m-d H:i:s");
+        $this->updated_at = $this->created_at;
+    }
+}
+
+class Post {
+    use Timestamps;
+    public $title;
+    public function __construct($title) {
+        $this->title = $title;
+        $this->just_created();
+    }
+}
+
+$post = new Post("Bài viết đầu tiên");
+echo $post->created_at; // ngày tạo</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="15">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 16 -->
+      <section class="doc-section learn-lesson" id="http-server" data-lesson="16">
+        <h2><span class="lesson-badge">Bài 16</span> HTTP Server đầu tiên</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Tạo web server chạy được, xử lý requests và trả về responses.
+        </div>
+
+        <h3>Server đơn giản nhất</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">server.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Đăng ký route "/" — xử lý mọi request tới trang chủ
+http_handle("/", function($req) {
+    // $req chứa: method, path, headers, query, body, params, cookies
+    $method = $req["method"];  // "GET", "POST", ...
+    $path   = $req["path"];    // "/", "/about", ...
+
+    // Trả về chuỗi HTML
+    return "&lt;h1&gt;Xin chào từ GracePL! 🚀&lt;/h1&gt;&lt;p&gt;Method: $method&lt;/p&gt;";
+});
+
+http_handle("/about", function($req) {
+    return "&lt;h1&gt;Về chúng tôi&lt;/h1&gt;&lt;p&gt;GracePL v2.0&lt;/p&gt;";
+});
+
+// Khởi động server trên port 8080
+echo "Server đang chạy tại http://localhost:8080\n";
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">terminal</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>gracepl run server.gp
+# Mở trình duyệt: http://localhost:8080</code></pre>
+        </div>
+
+        <h3>Cấu trúc đối tượng $req</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+http_handle("/debug", function($req) {
+    // Xem toàn bộ request
+    $method  = $req["method"];           // "GET"
+    $path    = $req["path"];             // "/debug"
+    $query   = $req["query"];            // ["key" => "value"] từ ?key=value
+    $headers = $req["headers"];          // map headers
+    $body    = $req["body"];             // request body (string)
+    $ip      = $req["remote_addr"];      // "127.0.0.1:56789"
+    $cookies = $req["cookies"];          // map cookies
+
+    // Query string: GET /debug?name=Alice&page=2
+    $name = $query["name"] ?? "Khách";
+    $page = intval($query["page"] ?? 1);
+
+    return "&lt;p&gt;Xin chào $name, trang $page&lt;/p&gt;";
+});
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="16">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 17 -->
+      <section class="doc-section learn-lesson" id="route-params" data-lesson="17">
+        <h2><span class="lesson-badge">Bài 17</span> Route Parameters &amp; Định tuyến nâng cao</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">routing.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Route parameters (:id, :slug...) ───────
+http_handle("/users/:id", function($req) {
+    $id = $req["params"]["id"];     // lấy từ URL
+    return "&lt;p&gt;User ID: $id&lt;/p&gt;";
+});
+
+http_handle("/posts/:year/:slug", function($req) {
+    $year = $req["params"]["year"];
+    $slug = $req["params"]["slug"];
+    return "&lt;p&gt;Bài viết $slug năm $year&lt;/p&gt;";
+});
+
+// ── Method-specific routes ───────────────────
+http_route_get("/api/users", function($req) {
+    return json_encode(["users" => []]); // danh sách
+});
+
+http_route_post("/api/users", function($req) {
+    $body = json_decode($req["body"]);
+    // Tạo user mới
+    return json_encode(["created" => true, "name" => $body["name"]]);
+});
+
+http_route_put("/api/users/:id", function($req) {
+    $id = $req["params"]["id"];
+    $body = json_decode($req["body"]);
+    return json_encode(["updated" => $id]);
+});
+
+http_route_delete("/api/users/:id", function($req) {
+    $id = $req["params"]["id"];
+    return json_encode(["deleted" => $id]);
+});
+
+// ── Static files ─────────────────────────────
+http_static("/static/", "public/"); // phục vụ file từ thư mục public/
+
+// ── Middleware ───────────────────────────────
+http_request_id();   // mỗi request có ID duy nhất
+http_gzip();         // nén response
+
+echo "API server: http://localhost:8080\n";
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="17">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 18 -->
+      <section class="doc-section learn-lesson" id="json-api" data-lesson="18">
+        <h2><span class="lesson-badge">Bài 18</span> Xây dựng REST API hoàn chỉnh</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">api.gp — REST API mẫu</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Dữ liệu in-memory (thực tế dùng database)
+$todos = [
+    ["id" => 1, "title" => "Học GracePL", "done" => false],
+    ["id" => 2, "title" => "Xây dựng API",  "done" => true],
+];
+$next_id = 3;
+
+// GET /api/todos — lấy danh sách
+http_route_get("/api/todos", function($req) use (&$todos) {
+    http_json($todos);
+});
+
+// GET /api/todos/:id — lấy một item
+http_route_get("/api/todos/:id", function($req) use (&$todos) {
+    $id = intval($req["params"]["id"]);
+    foreach ($todos as $todo) {
+        if ($todo["id"] == $id) {
+            http_json($todo);
+            return;
+        }
+    }
+    http_json(["error" => "Không tìm thấy"], 404);
+});
+
+// POST /api/todos — tạo mới
+http_route_post("/api/todos", function($req) use (&$todos, &$next_id) {
+    $body = json_decode($req["body"]);
+    if (empty($body["title"])) {
+        http_json(["error" => "title là bắt buộc"], 400);
+        return;
+    }
+    $new_todo = ["id" => $next_id++, "title" => $body["title"], "done" => false];
+    $todos[] = $new_todo;
+    http_json($new_todo, 201);
+});
+
+// PUT /api/todos/:id — cập nhật
+http_route_put("/api/todos/:id", function($req) use (&$todos) {
+    $id   = intval($req["params"]["id"]);
+    $body = json_decode($req["body"]);
+    foreach ($todos as &$todo) {
+        if ($todo["id"] == $id) {
+            if (isset($body["title"])) $todo["title"] = $body["title"];
+            if (isset($body["done"]))  $todo["done"]  = (bool)$body["done"];
+            http_json($todo);
+            return;
+        }
+    }
+    http_json(["error" => "Không tìm thấy"], 404);
+});
+
+// DELETE /api/todos/:id
+http_route_delete("/api/todos/:id", function($req) use (&$todos) {
+    $id = intval($req["params"]["id"]);
+    $todos = array_filter($todos, function($t) use ($id) { return $t["id"] != $id; });
+    $todos = array_values($todos);
+    http_json(["deleted" => $id]);
+});
+
+http_cors();    // bật CORS cho frontend
+echo "Todo API: http://localhost:8080\n";
+http_serve(":8080");</code></pre>
+        </div>
+
+        <h3>Test bằng curl</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code># Lấy danh sách
+curl http://localhost:8080/api/todos
+
+# Tạo mới
+curl -X POST http://localhost:8080/api/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Học REST API"}'
+
+# Cập nhật
+curl -X PUT http://localhost:8080/api/todos/1 \
+  -H "Content-Type: application/json" \
+  -d '{"done":true}'
+
+# Xóa
+curl -X DELETE http://localhost:8080/api/todos/1</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="18">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 19 -->
+      <section class="doc-section learn-lesson" id="html-template" data-lesson="19">
+        <h2><span class="lesson-badge">Bài 19</span> Render HTML Template</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">templates/index.html</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="vi"&gt;
+&lt;head&gt;&lt;title&gt;{{page_title}} — MyApp&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Xin chào, {{username}}!&lt;/h1&gt;
+
+  {{if is_admin}}
+  &lt;div class="admin-banner"&gt;Bạn đang đăng nhập với quyền Admin&lt;/div&gt;
+  {{endif}}
+
+  &lt;h2&gt;Danh sách bài viết&lt;/h2&gt;
+  {{if posts}}
+  &lt;ul&gt;
+    {{foreach posts as post}}
+    &lt;li&gt;
+      &lt;a href="/posts/{{post.id}}"&gt;{{post.title}}&lt;/a&gt;
+      &lt;span&gt;{{post.date}}&lt;/span&gt;
+    &lt;/li&gt;
+    {{end}}
+  &lt;/ul&gt;
+  {{else}}
+  &lt;p&gt;Chưa có bài viết nào.&lt;/p&gt;
+  {{endif}}
+
+  {{include "templates/footer.html"}}
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">server.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+http_handle("/", function($req) {
+    $posts = [
+        ["id" => 1, "title" => "Giới thiệu GracePL", "date" => "2026-01-15"],
+        ["id" => 2, "title" => "Xây dựng REST API",   "date" => "2026-02-01"],
+        ["id" => 3, "title" => "Deploy lên production","date" => "2026-03-07"],
+    ];
+
+    $html = render("templates/index.html", [
+        "page_title" => "Trang chủ",
+        "username"   => "Alice",
+        "is_admin"   => true,
+        "posts"      => $posts,
+    ]);
+
+    // Trả về HTML với đúng Content-Type
+    http_set_header("Content-Type", "text/html; charset=utf-8");
+    return $html;
+});
+
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <b>💡 Bảo mật XSS:</b> Biến <code>{{ten}}</code> tự động escape HTML — <code>&lt;</code> thành <code>&amp;lt;</code>. Nếu cần xuất HTML thô (trusted), dùng <code>{{ten | raw}}</code>.
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="19">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 20 -->
+      <section class="doc-section learn-lesson" id="db-crud" data-lesson="20">
+        <h2><span class="lesson-badge">Bài 20</span> CRUD với Database</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Kết nối database và thực hiện Create, Read, Update, Delete.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">db.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Kết nối ──────────────────────────────────
+// SQLite (không cần cài server — tốt cho học)
+$db = db_connect("sqlite://./data.db");
+
+// MySQL / MariaDB
+// $db = db_connect("mysql://user:pass@localhost:3306/mydb");
+
+// PostgreSQL
+// $db = db_connect("postgres://user:pass@localhost:5432/mydb");
+
+// ── Tạo bảng ────────────────────────────────
+db_exec($db, "CREATE TABLE IF NOT EXISTS users (
+    id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    ten     TEXT    NOT NULL,
+    email   TEXT    NOT NULL UNIQUE,
+    tuoi    INTEGER,
+    ngay_tao TEXT DEFAULT CURRENT_TIMESTAMP
+)");
+
+// ── CREATE — thêm dữ liệu ───────────────────
+$id = db_insert($db, "users", [
+    "ten"   => "Alice",
+    "email" => "alice@example.com",
+    "tuoi"  => 25
+]);
+echo "Đã thêm user ID: $id\n";
+
+// ── READ — đọc dữ liệu ──────────────────────
+// Tất cả
+$users = db_query($db, "SELECT * FROM users ORDER BY id");
+foreach ($users as $u) {
+    echo "{$u['id']}: {$u['ten']} ({$u['email']})\n";
+}
+
+// Một bản ghi
+$user = db_query_row($db, "SELECT * FROM users WHERE id = ?", [1]);
+if ($user) echo "Tìm thấy: " . $user["ten"];
+
+// Với điều kiện
+$adults = db_query($db, "SELECT * FROM users WHERE tuoi >= ?", [18]);
+
+// ── UPDATE — cập nhật ───────────────────────
+$affected = db_update($db, "users",
+    ["tuoi" => 26, "email" => "alice_new@example.com"],
+    ["id" => $id]
+);
+echo "Đã cập nhật $affected bản ghi\n";
+
+// ── DELETE — xóa ────────────────────────────
+$deleted = db_delete($db, "users", ["id" => $id]);
+echo "Đã xóa $deleted bản ghi\n";
+
+// ── Transaction — đảm bảo tính toàn vẹn ─────
+db_begin($db);
+try {
+    db_insert($db, "users", ["ten" => "Bob", "email" => "bob@example.com", "tuoi" => 30]);
+    db_insert($db, "users", ["ten" => "Carol","email" => "carol@example.com","tuoi" => 28]);
+    db_commit($db);
+    echo "Transaction thành công!";
+} catch ($e) {
+    db_rollback($db);
+    echo "Transaction thất bại: " . $e->message;
+}
+
+db_close($db);</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="20">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 21 -->
+      <section class="doc-section learn-lesson" id="form-validation" data-lesson="21">
+        <h2><span class="lesson-badge">Bài 21</span> Form Validation</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">validation.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+http_handle("/register", function($req) {
+    if ($req["method"] == "GET") {
+        // Hiện form đăng ký
+        return render("templates/register.html", ["errors" => []]);
+    }
+
+    // POST — xử lý form
+    $body = json_decode($req["body"]);
+
+    // Validate với rule engine tích hợp
+    $result = validate($body, [
+        "ten"       => "required|string|min:2|max:50",
+        "email"     => "required|email",
+        "mat_khau"  => "required|string|min:8",
+        "tuoi"      => "required|numeric|min:13|max:120",
+        "vai_tro"   => "required|in:user,admin"
+    ]);
+
+    if (!$result["valid"]) {
+        http_json(["errors" => $result["errors"]], 422);
+        return;
+    }
+
+    // Dữ liệu hợp lệ — lưu vào DB
+    $db = db_connect("sqlite://./app.db");
+    $id = db_insert($db, "users", [
+        "ten"       => $body["ten"],
+        "email"     => $body["email"],
+        "mat_khau"  => password_hash($body["mat_khau"]),
+        "tuoi"      => intval($body["tuoi"])
+    ]);
+    db_close($db);
+
+    http_json(["success" => true, "user_id" => $id], 201);
+});
+
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="21">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 22 -->
+      <section class="doc-section learn-lesson" id="auth-jwt" data-lesson="22">
+        <h2><span class="lesson-badge">Bài 22</span> Xác thực với JWT</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">auth.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+env_load(".env");
+$JWT_SECRET = env("JWT_SECRET", "change-this-secret-in-production");
+$db = db_connect(env("DB_URL", "sqlite://./app.db"));
+
+// ── Login ─────────────────────────────────────
+http_route_post("/auth/login", function($req) use ($db, $JWT_SECRET) {
+    $body = json_decode($req["body"]);
+    $email = $body["email"] ?? "";
+    $pass  = $body["password"] ?? "";
+
+    if (empty($email) || empty($pass)) {
+        http_json(["error" => "Thiếu email hoặc mật khẩu"], 400);
+        return;
+    }
+
+    $user = db_query_row($db, "SELECT * FROM users WHERE email = ?", [$email]);
+    if (!$user || !password_verify($pass, $user["mat_khau"])) {
+        http_json(["error" => "Email hoặc mật khẩu không đúng"], 401);
+        return;
+    }
+
+    // Tạo JWT token — hết hạn sau 24 giờ
+    $token = jwt_encode([
+        "user_id" => $user["id"],
+        "email"   => $user["email"],
+        "role"    => $user["vai_tro"] ?? "user"
+    ], $JWT_SECRET, 86400);
+
+    http_json(["token" => $token, "user" => ["id" => $user["id"], "ten" => $user["ten"]]]);
+});
+
+// ── Middleware xác thực ──────────────────────
+function require_auth($req, $secret) {
+    $auth = $req["headers"]["Authorization"] ?? $req["headers"]["authorization"] ?? "";
+    if (!str_starts_with($auth, "Bearer ")) {
+        http_json(["error" => "Cần xác thực"], 401);
+        return null;
+    }
+    $token = substr($auth, 7);
+    $claims = jwt_decode($token, $secret);
+    if (!$claims) {
+        http_json(["error" => "Token không hợp lệ hoặc đã hết hạn"], 401);
+        return null;
+    }
+    return $claims; // trả về payload của token
+}
+
+// ── Protected route ──────────────────────────
+http_route_get("/api/profile", function($req) use ($db, $JWT_SECRET) {
+    $claims = require_auth($req, $JWT_SECRET);
+    if (!$claims) return; // đã trả error trong require_auth
+
+    $user = db_query_row($db, "SELECT id,ten,email FROM users WHERE id = ?", [$claims["user_id"]]);
+    http_json($user);
+});
+
+echo "Auth server: http://localhost:8080\n";
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="22">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 23 -->
+      <section class="doc-section learn-lesson" id="file-upload" data-lesson="23">
+        <h2><span class="lesson-badge">Bài 23</span> Xử lý File &amp; Upload</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">files.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── Đọc / ghi file ──────────────────────────
+$content = file_get_contents("data.txt");
+file_put_contents("output.txt", "Hello from GracePL!\n");
+file_put_contents("log.txt", date("Y-m-d H:i:s") . " - Event\n", FILE_APPEND);
+
+// ── Kiểm tra file / thư mục ─────────────────
+if (file_exists("config.json")) {
+    $config = json_decode(file_get_contents("config.json"));
+}
+echo is_file("script.gp");   // true
+echo is_dir("templates/");   // true
+
+// ── Làm việc với thư mục ────────────────────
+mkdir("uploads/avatars/", 0755, true); // tạo đệ quy
+$files = scandir("uploads/");          // liệt kê file
+$phpFiles = glob("*.gp");             // wildcard
+$subDirs = glob("src/*/", GLOB_ONLYDIR); // chỉ thư mục
+
+// ── Upload file qua HTTP (multipart form) ────
+http_route_post("/upload", function($req) {
+    $file = $req["files"]["file"] ?? null;
+
+    if (!$file) {
+        http_json(["error" => "Không tìm thấy file"], 400);
+        return;
+    }
+
+    // Kiểm tra mime type (bảo mật)
+    $allowed = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
+    if (!in_array($file["type"], $allowed)) {
+        http_json(["error" => "Loại file không được phép"], 415);
+        return;
+    }
+
+    // Kiểm tra kích thước (5MB max)
+    if ($file["size"] > 5 * 1024 * 1024) {
+        http_json(["error" => "File quá lớn (max 5MB)"], 413);
+        return;
+    }
+
+    // Tạo tên file ngẫu nhiên để tránh overwrite
+    $ext = substr($file["name"], strrpos($file["name"], "."));
+    $newname = "uploads/" . sha1($file["name"] . time()) . $ext;
+
+    // Lưu file
+    file_write_bytes($newname, file_read_bytes($file["tmp"]));
+
+    http_json(["url" => "/static/" . basename($newname), "size" => $file["size"]]);
+});
+
+http_static("/static/", "uploads/");
+http_serve(":8080");</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="23">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 24 -->
+      <section class="doc-section learn-lesson" id="concurrency" data-lesson="24">
+        <h2><span class="lesson-badge">Bài 24</span> Concurrency — Goroutine &amp; Channel</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Chạy nhiều tác vụ song song — GracePL dùng model goroutine và channel giống Go.
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">concurrency.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── go {} — chạy trong goroutine mới ─────────
+$ch = chan_make(10); // channel với buffer 10
+
+go {
+    sleep_ms(100); // giả lập xử lý
+    chan_send($ch, "Kết quả từ goroutine 1");
+}
+
+go {
+    sleep_ms(200);
+    chan_send($ch, "Kết quả từ goroutine 2");
+}
+
+// Nhận kết quả từ 2 goroutines
+$r1 = chan_recv($ch);
+$r2 = chan_recv($ch);
+echo "$r1\n$r2\n";
+
+// ── WaitGroup — chờ nhiều goroutines ─────────
+$wg = wg_make();
+$results = [];
+
+for ($i = 1; $i <= 5; $i++) {
+    wg_add($wg, 1);
+    $n = $i;
+    go_run(function() use ($wg, $n, &$results) {
+        sleep_ms($n * 50);
+        $results[] = "Task $n xong";
+        wg_done($wg);
+    });
+}
+
+wg_wait($wg); // chờ tất cả xong
+foreach ($results as $r) echo $r . "\n";
+
+// ── Parallel HTTP requests ────────────────────
+$urls = [
+    "https://jsonplaceholder.typicode.com/users/1",
+    "https://jsonplaceholder.typicode.com/users/2",
+    "https://jsonplaceholder.typicode.com/users/3",
+];
+
+$chan = chan_make(count($urls));
+
+foreach ($urls as $url) {
+    go_run(function() use ($url, $chan) {
+        $data = json_decode(http_get($url));
+        chan_send($chan, $data["name"] ?? "unknown");
+    });
+}
+
+for ($i = 0; $i < count($urls); $i++) {
+    echo chan_recv($chan) . "\n";
+}</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="24">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 25 -->
+      <section class="doc-section learn-lesson" id="error-handling" data-lesson="25">
+        <h2><span class="lesson-badge">Bài 25</span> Xử lý lỗi &amp; Exception</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">errors.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// ── try / catch / finally ────────────────────
+function chia($a, $b) {
+    if ($b == 0) {
+        throw new Exception("Không thể chia cho 0");
+    }
+    return $a / $b;
+}
+
+try {
+    $result = chia(10, 0);
+    echo $result;
+} catch (Exception $e) {
+    echo "Lỗi: " . $e->message . "\n";
+    echo "Tại: " . $e->file . ":" . $e->line . "\n";
+} finally {
+    echo "Khối finally luôn chạy\n";
+}
+
+// ── Custom Exception ─────────────────────────
+class ValidationException extends Exception {
+    public $errors;
+    public function __construct($errors) {
+        parent::__construct("Dữ liệu không hợp lệ");
+        $this->errors = $errors;
+    }
+}
+
+function createUser($data) {
+    $errors = [];
+    if (empty($data["ten"])) $errors[] = "Thiếu tên";
+    if (empty($data["email"])) $errors[] = "Thiếu email";
+    if (!empty($errors)) throw new ValidationException($errors);
+    // ...tạo user
+}
+
+try {
+    createUser(["ten" => ""]);
+} catch (ValidationException $e) {
+    echo "Lỗi validation:\n";
+    foreach ($e->errors as $err) echo "  - $err\n";
+} catch (Exception $e) {
+    echo "Lỗi chung: " . $e->message;
+}
+
+// ── is_error() — kiểm tra giá trị lỗi ────────
+$result = db_connect("invalid://bad-url");
+if (is_error($result)) {
+    echo "Kết nối thất bại!";
+    log_error("DB connection failed", ["url" => "invalid://bad-url"]);
+}</code></pre>
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="25">✅ Đánh dấu đã học xong</div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ LESSON 26 -->
+      <section class="doc-section learn-lesson" id="project" data-lesson="26">
+        <h2><span class="lesson-badge">Bài 26</span> 🏗️ Dự án thực tế: Blog API + Frontend</h2>
+
+        <div class="callout callout-info">
+          <b>🎯 Mục tiêu:</b> Tổng hợp tất cả kiến thức để xây dựng một ứng dụng blog hoàn chỉnh từ đầu đến cuối.
+        </div>
+
+        <h3>Cấu trúc dự án</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">cây thư mục</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>my-blog/
+├── server.gp          # Entry point
+├── .env               # Cấu hình (DB, JWT_SECRET...)
+├── db/
+│   └── migrations.gp  # Tạo bảng
+├── templates/
+│   ├── base.html      # Layout chung (header/footer)
+│   ├── home.html      # Trang chủ
+│   ├── post.html      # Chi tiết bài viết
+│   └── admin.html     # Quản lý (cần đăng nhập)
+└── public/
+    ├── style.css
+    └── app.js</code></pre>
+        </div>
+
+        <h3>server.gp — Entry point</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">server.gp</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+env_load(".env");
+$DB  = db_connect(env("DB_URL", "sqlite://./blog.db"));
+$KEY = env("JWT_SECRET", "my-secret-key");
+$PORT = env("PORT", "8080");
+
+// ── Init DB ──────────────────────────────────
+db_exec($DB, "CREATE TABLE IF NOT EXISTS posts (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    title     TEXT NOT NULL,
+    slug      TEXT UNIQUE,
+    content   TEXT,
+    author    TEXT,
+    published INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+)");
+
+// ── Middleware ────────────────────────────────
+http_request_id();
+http_panic_recover();
+http_security_headers();
+http_gzip();
+log_format("json");
+http_static("/static/", "public/");
+
+// ── Trang chủ (công khai) ────────────────────
+http_route_get("/", function($req) use ($DB) {
+    $posts = db_query($DB, "SELECT id,title,slug,author,created_at FROM posts WHERE published=1 ORDER BY id DESC LIMIT 10");
+    return render("templates/home.html", ["posts" => $posts, "title" => "Blog GracePL"]);
+});
+
+// ── Chi tiết bài viết ────────────────────────
+http_route_get("/posts/:slug", function($req) use ($DB) {
+    $slug = $req["params"]["slug"];
+    $post = db_query_row($DB, "SELECT * FROM posts WHERE slug=? AND published=1", [$slug]);
+    if (!$post) { http_status(404); return render("templates/404.html", []); }
+    return render("templates/post.html", ["post" => $post]);
+});
+
+// ── API — cần xác thực ───────────────────────
+http_route_post("/api/posts", function($req) use ($DB, $KEY) {
+    $auth = $req["headers"]["Authorization"] ?? "";
+    $claims = jwt_decode(substr($auth, 7), $KEY);
+    if (!$claims || $claims["role"] !== "admin") {
+        http_json(["error" => "Không có quyền"], 403); return;
+    }
+    $b = json_decode($req["body"]);
+    $v = validate($b, ["title"=>"required|min:3", "content"=>"required|min:10"]);
+    if (!$v["valid"]) { http_json(["errors"=>$v["errors"]], 422); return; }
+    $slug = strtolower(str_replace(" ", "-", preg_replace('/[^\w\s-]/', '', $b["title"])));
+    $id = db_insert($DB, "posts", ["title"=>$b["title"],"slug"=>$slug,"content"=>$b["content"],"author"=>$claims["name"],"published"=>1]);
+    http_json(["id"=>$id, "slug"=>$slug], 201);
+});
+
+// ── Auth ──────────────────────────────────────
+http_route_post("/api/login", function($req) use ($KEY) {
+    $b = json_decode($req["body"]);
+    // Trong thực tế: kiểm tra DB
+    if ($b["email"] === env("ADMIN_EMAIL","admin@blog.com") && 
+        $b["password"] === env("ADMIN_PASS","admin123")) {
+        $token = jwt_encode(["name"=>"Admin","role"=>"admin"], $KEY, 86400);
+        http_json(["token" => $token]);
+    } else {
+        http_json(["error" => "Sai thông tin đăng nhập"], 401);
+    }
+});
+
+echo "Blog đang chạy: http://localhost:$PORT\n";
+http_serve(":$PORT");</code></pre>
+        </div>
+
+        <h3>Chạy dự án</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>cd my-blog
+gracepl run server.gp
+
+# Test tạo bài viết
+TOKEN=$(curl -s -X POST http://localhost:8080/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@blog.com","password":"admin123"}' | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+
+curl -X POST http://localhost:8080/api/posts \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Bài viết đầu tiên","content":"Nội dung bài viết..."}'
+
+# Xem trang chủ
+open http://localhost:8080</code></pre>
+        </div>
+
+        <div class="callout callout-success">
+          <b>🎉 Chúc mừng!</b> Bạn đã hoàn thành toàn bộ tutorial GracePL! Bây giờ bạn có thể xây dựng các ứng dụng web thực tế. Hãy xem <a href="/">tài liệu đầy đủ</a> để khám phá thêm các tính năng nâng cao.
+        </div>
+
+        <div class="lesson-complete-btn" data-lesson="26">✅ Đánh dấu đã học xong</div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div>© 2026 GracePL. Mã nguồn mở — MIT License.</div>
+    <div>
+      <a href="https://github.com/ghoullp/gracepl-lang">GitHub</a> ·
+      <a href="/">Tài liệu</a> ·
+      <a href="/learn">Tutorial</a>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+  <script src="/static/learn.js"></script>
+</body>
+</html>
