@@ -34,6 +34,7 @@
     </div>
     <div class="header-right">
       <span class="header-badge">v3.0</span>
+      <a href="/learn" class="header-link" style="color:#a78bfa;font-weight:600">📚 Tutorial</a>
       <a href="https://github.com/ghoullp/gracepl-lang" class="header-link">GitHub</a>
       <a href="../README.md" class="header-link">README</a>
       <a href="../LANGUAGE_SPEC.md" class="header-link">Spec</a>
@@ -106,8 +107,13 @@
         <a href="#testing">Testing</a>
         <a href="#pkg">Package Manager</a>
         <a href="#debugger">Debugger</a>
-        <a href="#http">HTTP & Web</a>
+        <a href="#http">HTTP &amp; Web</a>
         <a href="#templates">Template Engine</a>
+        <a href="#env">Biến Môi Trường</a>
+        <a href="#https">HTTPS / TLS</a>
+        <a href="#server-config">Server Config</a>
+        <a href="#csrf">CSRF Protection</a>
+        <a href="#http-routes">HTTP Route Helpers</a>
       </div>
 
       <div class="nav-group">
@@ -120,6 +126,14 @@
         <a href="#stdlib-http">HTTP Client</a>
         <a href="#stdlib-db">Database</a>
         <a href="#stdlib-chan">Channel</a>
+        <a href="#stdlib-crypto">Crypto &amp; Security</a>
+        <a href="#stdlib-process">Process Management</a>
+        <a href="#stdlib-network">TCP / UDP / DNS</a>
+        <a href="#stdlib-filewatch">File Watch</a>
+        <a href="#stdlib-cache">In-memory Cache</a>
+        <a href="#stdlib-profiling">Profiling</a>
+        <a href="#stdlib-error">Error Chaining</a>
+        <a href="#stdlib-bytes">Binary / Bytes</a>
       </div>
     </nav>
 
@@ -661,7 +675,7 @@ $user["email"] = "a@b.c"; // thêm
 unset($user["age"]);       // xóa
 
 // Hàm array phổ biến
-array_push($arr, $val);
+array_push($arr, $val);    // sửa $arr trực tiếp — KHÔNG gán lại!
 array_pop($arr);
 array_shift($arr);         // xóa đầu
 array_unshift($arr, $val); // thêm đầu
@@ -1493,6 +1507,7 @@ http_handle("/", function($req) {
     http_json(["message" =&gt; "Hello from GracePL!"]);
 });
 
+// Route động: $req["params"]["id"] — lấy path segment
 http_handle("/users/:id", function($req) {
     $id = $req["params"]["id"];
     $user = db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
@@ -1500,19 +1515,75 @@ http_handle("/users/:id", function($req) {
     http_json($user);
 });
 
-// Production middleware stack
-http_request_id();                            // unique request ID
-http_panic_recover();                         // catch panics
-http_cors_whitelist(["https://myapp.com"]);   // CORS whitelist
-http_rate_limit(100, 60);                     // 100 req/min
-http_security_headers();                      // security headers
-http_gzip();                                  // compression
-metrics_enable("/metrics");                   // Prometheus
-http_health("/health");                       // health check
-log_format("json");                           // structured logs
+// Query string: $req["query"]["name"] — lấy ?name=Alice
+http_handle("/search", function($req) {
+    $q = isset($req["query"]["q"]) ? $req["query"]["q"] : "";
+    http_json(["query" =&gt; $q]);
+});
 
-http_serve(":8080");
+// Middleware stack — gọi trước http_serve()
+http_request_id();                           // inject X-Request-Id header
+http_panic_recover();                        // catch panic → 500 JSON
+http_cors_whitelist(["https://myapp.com"]);  // CORS cho các origin được phép
+http_rate_limit(100, 60);                    // 100 req/phút mỗi IP
+http_security_headers();                     // X-Frame-Options, CSP, HSTS…
+http_gzip();                                 // nén gzip tự động
+metrics_enable("/metrics");                  // Prometheus /metrics endpoint
+http_health("/health");                      // GET /health → {"status":"ok"}
+log_format("json");                          // log dưới dạng JSON
+http_static("public", "/static");            // serve file tĩnh
+http_use(function($req) {                    // custom middleware
+    return true; // false để chặn request
+});
 
+http_serve(":8080");</code></pre>
+        </div>
+
+        <h3>Request object ($req)</h3>
+        <table>
+          <thead><tr><th>Key</th><th>Mô tả</th><th>Ví dụ</th></tr></thead>
+          <tbody>
+            <tr><td><code>$req["params"]</code></td><td>Path segments dynamic (<code>/users/:id</code>)</td><td><code>$req["params"]["id"]</code></td></tr>
+            <tr><td><code>$req["query"]</code></td><td>Query string (<code>?name=Alice&amp;page=2</code>)</td><td><code>$req["query"]["name"]</code></td></tr>
+            <tr><td><code>$req["body"]</code></td><td>Request body (string)</td><td><code>json_decode($req["body"])</code></td></tr>
+            <tr><td><code>$req["method"]</code></td><td>HTTP method</td><td><code>"GET"</code>, <code>"POST"</code>…</td></tr>
+            <tr><td><code>$req["headers"]</code></td><td>Request headers (map)</td><td><code>$req["headers"]["authorization"]</code></td></tr>
+            <tr><td><code>$req["ip"]</code></td><td>Client IP</td><td><code>"127.0.0.1"</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Route wildcards không được hỗ trợ:</b> <code>/*</code> là path literal, không phải wildcard. Dùng <code>:param</code> hoặc <code>{param}</code> cho segment động.<br>
+          &nbsp;&nbsp;✅ <code>/news/:slug</code> — đúng<br>
+          &nbsp;&nbsp;❌ <code>/news/*</code> — không match được gì
+        </div>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Kiểm tra key tồn tại:</b> Trong GracePL, <code>null != false</code> trả về <code>true</code> — không dùng <code>$params["x"] != false</code> để kiểm tra key có tồn tại. Dùng <code>isset($params["x"])</code>.
+        </div>
+
+        <h3>HTTP Middleware &amp; Utility</h3>
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>http_cors($origin)</code></td><td>Bật CORS — nhận string, <code>"*"</code> hoặc một origin cụ thể</td></tr>
+            <tr><td><code>http_cors_whitelist($origins)</code></td><td>CORS whitelist — nhận array các origin được phép</td></tr>
+            <tr><td><code>http_rate_limit($reqs, $window_sec)</code></td><td>Giới hạn $reqs request/IP trong $window_sec giây</td></tr>
+            <tr><td><code>http_security_headers([$csp])</code></td><td>Thêm X-Frame-Options, X-Content-Type-Options, CSP, HSTS, Referrer-Policy</td></tr>
+            <tr><td><code>http_gzip()</code></td><td>Bật nén gzip tự động cho response</td></tr>
+            <tr><td><code>http_health($path)</code></td><td>Tạo health-check endpoint: GET $path → <code>{"status":"ok"}</code></td></tr>
+            <tr><td><code>http_static($dir [, $prefix])</code></td><td>Serve file tĩnh từ thư mục $dir tại URL $prefix</td></tr>
+            <tr><td><code>http_use($fn)</code></td><td>Custom GracePL middleware — $fn($req) trả về true (tiếp tục) hoặc false (chặn)</td></tr>
+            <tr><td><code>http_redirect($url [, $code])</code></td><td>Redirect → mặc định 302</td></tr>
+            <tr><td><code>http_request_id([$header])</code></td><td>Inject X-Request-Id vào request &amp; response (tạo mới nếu không có)</td></tr>
+            <tr><td><code>http_panic_recover()</code></td><td>Bắt panic trong handler → trả về 500 JSON thay vì crash server</td></tr>
+            <tr><td><code>http_active_connections()</code></td><td>Số kết nối HTTP đang active → int</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — WebSocket</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
 // ── WebSocket ──────────────────────────────────
 // Giới hạn dung lượng nhận tối đa mỗi tin nhắn/frame (vd: 10MB)
 ws_set_read_limit(10485760);
@@ -1534,6 +1605,22 @@ $post = http_post("https://api.example.com/users", [
     "body"    =&gt; json_encode(["name" =&gt; "Alice"])
 ]);</code></pre>
         </div>
+
+        <h3>WebSocket Room Helpers</h3>
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>ws_room_join($room)</code></td><td>Thêm kết nối WS hiện tại vào room</td></tr>
+            <tr><td><code>ws_room_leave($room)</code></td><td>Rời room</td></tr>
+            <tr><td><code>ws_room_broadcast($room, $msg)</code></td><td>Gửi text tới tất cả member trong room</td></tr>
+            <tr><td><code>ws_room_broadcast_binary($room, $bytes)</code></td><td>Gửi binary tới tất cả member trong room</td></tr>
+            <tr><td><code>ws_room_members($room)</code></td><td>Trả về array conn ID của các member</td></tr>
+            <tr><td><code>ws_rooms()</code></td><td>Trả về danh sách tất cả room đang active</td></tr>
+            <tr><td><code>ws_conn_id()</code></td><td>Lấy ID của kết nối WS hiện tại (trong handler)</td></tr>
+            <tr><td><code>ws_ping()</code></td><td>Gửi ping frame tới kết nối hiện tại</td></tr>
+            <tr><td><code>ws_set_read_limit($bytes)</code></td><td>Giới hạn kích thước frame nhận tối đa</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- ─────────────────────────────────── TEMPLATE ENGINE -->
@@ -1556,7 +1643,11 @@ $post = http_post("https://api.example.com/users", [
           <tbody>
             <tr>
               <td><code>{{key}}</code></td>
-              <td>Thay bằng giá trị biến (hỗ trợ cả <code>{{$key}}</code>)</td>
+              <td>Thay bằng giá trị biến — tự động <strong>HTML-escape</strong> (hỗ trợ cả <code>{{$key}}</code>)</td>
+            </tr>
+            <tr>
+              <td><code>{{key | raw}}</code></td>
+              <td>Output HTML thô <strong>không escape</strong> — dùng khi biến chứa HTML markup (card list, content block…)</td>
             </tr>
             <tr>
               <td><code>{{if key}} ... {{endif}}</code></td>
@@ -1660,6 +1751,224 @@ $html = render("templates/list.html", [
           <b>Tip:</b> Khi mỗi item là map có nhiều fields (title, date, url...), render từng item riêng rồi truyền HTML
           vào template cha qua biến. Đây là pattern khuyên dùng cho nested data.
         </div>
+
+        <div class="callout callout-warning">
+          <b>⚠️ HTML Escaping:</b> Mặc định <code>{{var}}</code> sẽ escape HTML (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>…). Nếu biến chứa HTML markup (ví dụ: card list, content bài viết), phải dùng <code>{{var | raw}}</code> — nếu không HTML sẽ hiển thị dưới dạng text thay vì được render.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── ENV SECTION -->
+      <section class="doc-section" id="env">
+        <h2><span class="section-num">24c</span> Biến Môi Trường</h2>
+        <p>GracePL cung cấp <code>env_load()</code> và <code>env()</code> để quản lý cấu hình qua file <code>.env</code> — không hardcode secret trong source code.</p>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Quan trọng:</b> Phải gọi <code>env_load(".env")</code> <strong>trước</strong> khi dùng <code>env()</code>. Nếu không, <code>env()</code> chỉ đọc từ OS environment variables.
+        </div>
+
+        <h3>File .env</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">.env</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code># Cổng phải có dấu ":" ở đầu
+APP_PORT=:3001
+DB_HOST=localhost
+DB_NAME=mydb
+DB_USER=root
+DB_PASS=secret
+ALLOWED_ORIGIN=https://yourdomain.com</code></pre>
+        </div>
+
+        <h3>Đọc biến môi trường</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Nạp file .env (relative tới thư mục của script — không phải cwd)
+env_load(".env");
+
+// Đọc biến — tham số 2 là giá trị mặc định nếu key không tồn tại
+$port   = env("APP_PORT", ":8000");
+$dbHost = env("DB_HOST",  "localhost");
+$debug  = env("DEBUG",    "false");
+
+// Khởi động server
+http_serve($port);</code></pre>
+        </div>
+
+        <h3>Lưu ý về cổng (port)</h3>
+        <table>
+          <thead><tr><th>Giá trị APP_PORT</th><th>Kết quả</th></tr></thead>
+          <tbody>
+            <tr><td><code>APP_PORT=:3001</code></td><td>✅ Đúng — listen trên port 3001</td></tr>
+            <tr><td><code>APP_PORT=3001</code></td><td>❌ Sai — thiếu <code>:</code>, server không start được</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Bảo mật</h3>
+        <ul>
+          <li>Luôn thêm <code>.env</code> vào <code>.gitignore</code> — không commit secret lên repo</li>
+          <li>Dùng <code>.env.example</code> (không có giá trị thật) để hướng dẫn team</li>
+          <li>Không hardcode API key, database password trong source code</li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────────── HTTPS / TLS -->
+      <section class="doc-section" id="https">
+        <h2><span class="section-num">24d</span> HTTPS / TLS</h2>
+        <p>Chạy server với SSL/TLS, hỗ trợ TLS 1.2+ và các cipher suite an toàn. Cần file certificate.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// http_serve_tls(addr, cert_file, key_file)
+// TLS 1.2+ với AES-GCM và ChaCha20-Poly1305
+
+http_handle("/", function($req) {
+    return http_json(["status" =&gt; "ok"]);
+});
+
+// Tự ký (development)
+// openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+http_serve_tls(":443", "cert.pem", "key.pem");
+// hoặc port khác:
+// http_serve_tls(":8443", "certs/cert.pem", "certs/key.pem");</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Tham số</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>http_serve_tls($addr, $cert, $key)</code></td><td>addr=":443", cert/key=PEM file path</td><td>Khởi động HTTPS server với graceful shutdown</td></tr>
+            <tr><td><code>http_serve($addr)</code></td><td>addr=":8080"</td><td>HTTP thường — dùng cho development hoặc sau reverse proxy</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>💡 Production:</b> Dùng Let's Encrypt + Certbot để có cert miễn phí. Hoặc đặt Nginx/Caddy trước làm reverse proxy để terminate TLS, GracePL chạy HTTP nội bộ.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── HTTP SERVER CONFIG -->
+      <section class="doc-section" id="server-config">
+        <h2><span class="section-num">24e</span> HTTP Server Config</h2>
+        <p>Tinh chỉnh timeout, request body limit và access log của HTTP server. Phải gọi <strong>trước</strong> <code>http_serve()</code>.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// http_server_config(key, value)
+
+http_server_config("read_timeout",  30);   // giây — mặc định 30s
+http_server_config("write_timeout", 30);   // giây — mặc định 30s
+http_server_config("idle_timeout",  120);  // giây — mặc định 120s
+http_server_config("body_limit",    5242880); // bytes — mặc định 10MB (10<<20)
+http_server_config("access_log",    false);   // tắt access log
+
+http_serve(":8080");</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Key</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>read_timeout</code></td><td>int (giây)</td><td>30</td><td>Thời gian tối đa đọc toàn bộ request</td></tr>
+            <tr><td><code>write_timeout</code></td><td>int (giây)</td><td>30</td><td>Thời gian tối đa ghi response</td></tr>
+            <tr><td><code>idle_timeout</code></td><td>int (giây)</td><td>120</td><td>Thời gian keep-alive connection chờ request tiếp</td></tr>
+            <tr><td><code>body_limit</code></td><td>int (bytes)</td><td>10485760</td><td>Kích thước tối đa request body</td></tr>
+            <tr><td><code>access_log</code></td><td>bool</td><td>true</td><td>Bật/tắt access log cho mỗi request</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── CSRF -->
+      <section class="doc-section" id="csrf">
+        <h2><span class="section-num">24f</span> CSRF Protection</h2>
+        <p>Bảo vệ form POST khỏi Cross-Site Request Forgery. Token có chữ ký HMAC-SHA256, hết hạn sau 2 giờ.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Bước 1: Khởi tạo CSRF (trước khi serve)
+csrf_init("secret-key-của-bạn"); // nếu bỏ qua → tự sinh random secret
+
+// Bước 2: Sinh token cho form GET
+http_handle("/form", function($req) {
+    $token = csrf_token();
+    return render("templates/form.html", ["csrf_token" =&gt; $token]);
+});
+
+// Bước 3: Kiểm tra token khi POST
+http_handle("POST", "/submit", function($req) {
+    $token = $req["body"]["_csrf"] ?? $req["headers"]["x-csrf-token"] ?? "";
+    if (!csrf_verify($token)) {
+        return http_status(403, "CSRF token không hợp lệ");
+    }
+    // xử lý form...
+    return http_redirect("/success");
+});</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">templates/form.html</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code>&lt;form method="POST" action="/submit"&gt;
+  &lt;input type="hidden" name="_csrf" value="{{csrf_token | raw}}"&gt;
+  &lt;input type="text" name="name" placeholder="Tên"&gt;
+  &lt;button type="submit"&gt;Gửi&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>csrf_init($secret?)</code></td><td>Khởi tạo CSRF; nếu bỏ secret → tự sinh an toàn</td></tr>
+            <tr><td><code>csrf_token()</code></td><td>Sinh token mới (ký HMAC-SHA256, hiệu lực 2 giờ)</td></tr>
+            <tr><td><code>csrf_verify($token)</code></td><td>Kiểm tra token hợp lệ và chưa hết hạn → bool</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── HTTP ROUTE HELPERS -->
+      <section class="doc-section" id="http-routes">
+        <h2><span class="section-num">24g</span> HTTP Route Helpers</h2>
+        <p>Sugar functions để đăng ký route theo method cụ thể — ngắn hơn <code>http_handle()</code>.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Tương đương http_handle("GET", "/path", $fn)
+http_route_get("/api/users", function($req) {
+    return http_json(db_query("SELECT id, name FROM users"));
+});
+
+http_route_post("/api/users", function($req) {
+    $data = json_decode($req["body"]);
+    $id = db_insert("users", ["name" =&gt; $data["name"]]);
+    return http_json(["id" =&gt; $id], 201);
+});
+
+http_route_put("/api/users/:id", function($req) {
+    $id = $req["params"]["id"];
+    $data = json_decode($req["body"]);
+    db_update("users", ["name" =&gt; $data["name"]], "id = ?", [$id]);
+    return http_json(["updated" =&gt; true]);
+});
+
+http_route_delete("/api/users/:id", function($req) {
+    $id = $req["params"]["id"];
+    db_delete("users", "id = ?", [$id]);
+    return http_json(["deleted" =&gt; true]);
+});
+
+http_serve(":8080");</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Tương đương</th></tr></thead>
+          <tbody>
+            <tr><td><code>http_route_get($path, $fn)</code></td><td><code>http_handle("GET", $path, $fn)</code></td></tr>
+            <tr><td><code>http_route_post($path, $fn)</code></td><td><code>http_handle("POST", $path, $fn)</code></td></tr>
+            <tr><td><code>http_route_put($path, $fn)</code></td><td><code>http_handle("PUT", $path, $fn)</code></td></tr>
+            <tr><td><code>http_route_delete($path, $fn)</code></td><td><code>http_handle("DELETE", $path, $fn)</code></td></tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- ─────────────────────────────────── STDLIB SECTIONS -->
@@ -1765,7 +2074,7 @@ $html = render("templates/list.html", [
             </tr>
             <tr>
               <td><code>array_push($a, $v)</code></td>
-              <td>Thêm vào cuối</td>
+              <td>Thêm vào cuối — trả về <strong>số phần tử</strong> mới, <strong>không</strong> trả về mảng. Không viết <code>$a = array_push($a, $v)</code></td>
             </tr>
             <tr>
               <td><code>array_pop($a)</code></td>
@@ -2221,6 +2530,466 @@ db_stmt_close($stmt);</code></pre>
               <td><code>go_run($fn, $args)</code></td>
               <td>Chạy callable trong goroutine</td>
             </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── CRYPTO & SECURITY -->
+      <section class="doc-section" id="stdlib-crypto">
+        <h2><span class="section-num">33</span> Thư viện: Crypto &amp; Security</h2>
+
+        <h3>Password</h3>
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>password_hash($pwd [, $algo, $cost])</code></td><td>Bcrypt hash — lưu DB, không reversible. cost mặc định 10</td></tr>
+            <tr><td><code>password_verify($pwd, $hash)</code></td><td>Kiểm tra password vs bcrypt hash → bool</td></tr>
+            <tr><td><code>random_bytes($n)</code></td><td>Hex string $n bytes ngẫu nhiên crypto/rand (mặc định 32, max 4096)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Hashing</h3>
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>md5($s)</code></td><td>MD5 hex — chỉ dùng cho checksum, không dùng cho auth</td></tr>
+            <tr><td><code>sha1($s)</code></td><td>SHA1 hex</td></tr>
+            <tr><td><code>sha256($s)</code></td><td>SHA-256 hex</td></tr>
+            <tr><td><code>hash_hmac($algo, $data, $key)</code></td><td>HMAC-SHA256 hex — algo: "sha256"</td></tr>
+          </tbody>
+        </table>
+
+        <h3>AES Encryption (AES-256-GCM)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$key = "secret-key-của-bạn"; // tự SHA-256 thành 32 bytes nội bộ
+
+// Mã hóa → base64(nonce[12] + ciphertext + tag[16])
+$cipher = aes_encrypt("thông tin nhạy cảm", $key);
+echo $cipher; // base64 string
+
+// Giải mã
+$plain = aes_decrypt($cipher, $key);
+echo $plain; // "thông tin nhạy cảm"
+
+// Dùng key 32-byte raw (không qua SHA-256 nội bộ)
+$rawKey = bytes_from_hex("0123456789abcdef...");
+$cipher2 = aes_encrypt_key("data", $rawKey);
+$plain2  = aes_decrypt_key($cipher2, $rawKey);</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>aes_encrypt($plain, $key [, $raw])</code></td><td>AES-256-GCM encrypt → base64. $raw=true → KBytes</td></tr>
+            <tr><td><code>aes_decrypt($cipher_b64, $key [, $raw])</code></td><td>Giải mã base64 → string plaintext</td></tr>
+            <tr><td><code>aes_encrypt_key($plain, $bytes_key)</code></td><td>Encrypt với KBytes key (phải đúng 16/24/32 bytes)</td></tr>
+            <tr><td><code>aes_decrypt_key($cipher, $bytes_key)</code></td><td>Decrypt với KBytes key</td></tr>
+          </tbody>
+        </table>
+
+        <h3>RSA Asymmetric Encryption</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Sinh cặp key RSA
+$keys = rsa_generate(2048); // {"private": "-----BEGIN...", "public": "-----BEGIN..."}
+$priv = $keys["private"];
+$pub  = $keys["public"];
+
+// Ký dữ liệu (SHA-256 hoặc SHA-512)
+$sig = rsa_sign("payload data", $priv, "sha256");
+
+// Xác minh chữ ký
+$ok = rsa_verify("payload data", $sig, $pub, "sha256");
+
+// Mã hóa bằng public key (RSA-OAEP)
+$enc = rsa_encrypt("secret msg", $pub);
+$dec = rsa_decrypt($enc, $priv);</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>rsa_generate($bits?)</code></td><td>Sinh RSA key pair → {private, public} PEM strings. bits mặc định 2048</td></tr>
+            <tr><td><code>rsa_sign($data, $priv_pem [, $algo])</code></td><td>Ký → base64 signature. algo: "sha256" (mặc định), "sha512"</td></tr>
+            <tr><td><code>rsa_verify($data, $sig_b64, $pub_pem [, $algo])</code></td><td>Xác minh chữ ký → bool</td></tr>
+            <tr><td><code>rsa_encrypt($plain, $pub_pem)</code></td><td>RSA-OAEP encrypt → base64</td></tr>
+            <tr><td><code>rsa_decrypt($cipher_b64, $priv_pem)</code></td><td>RSA-OAEP decrypt → plaintext</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── PROCESS MANAGEMENT -->
+      <section class="doc-section" id="stdlib-process">
+        <h2><span class="section-num">34</span> Thư viện: Process Management</h2>
+        <p>Chạy lệnh hệ thống, script ngoài, hoặc tool deploy từ GracePL.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// proc_exec(cmd [, args, cwd, stdin]) → {stdout, exit_code}
+// Blocking — chờ process kết thúc
+$result = proc_exec("git", ["log", "--oneline", "-5"], "/app");
+echo $result["stdout"];     // output của git
+echo $result["exit_code"];  // 0 = thành công
+
+// shell_exec(cmd) — chạy qua shell (sh -c / cmd /C), trả về output string
+$files = shell_exec("ls -la /var/log");
+
+// proc_exec_async — non-blocking, trả về resource handle
+$handle = proc_exec_async("npm", ["run", "build"], "/app/frontend");
+// ... làm việc khác trong lúc build chạy ...
+$res = proc_wait($handle); // chờ kết thúc
+echo "Build exit: " . $res["exit_code"];
+
+// Với stdin (pipe input)
+$out = proc_exec("grep", ["error"], "", "line1\nERROR: fail\nline3");
+echo $out["stdout"]; // "ERROR: fail"</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>proc_exec($cmd [, $args, $cwd, $stdin])</code></td><td>Chạy process blocking → <code>{stdout, exit_code}</code></td></tr>
+            <tr><td><code>proc_exec_async($cmd [, $args, $cwd, $stdin])</code></td><td>Chạy async → resource handle</td></tr>
+            <tr><td><code>proc_wait($handle)</code></td><td>Chờ async process → <code>{stdout, exit_code}</code></td></tr>
+            <tr><td><code>shell_exec($cmd)</code></td><td>Chạy qua shell → output string (như <code>`cmd`</code> trong PHP)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Bảo mật:</b> Không truyền user input trực tiếp vào <code>shell_exec()</code> — nguy cơ command injection. Dùng <code>proc_exec()</code> với args array để tham số được escape tự động.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────────── TCP / UDP / DNS -->
+      <section class="doc-section" id="stdlib-network">
+        <h2><span class="section-num">35</span> Thư viện: TCP / UDP / DNS</h2>
+        <p>Raw network programming — xây dựng proxy, custom protocol server, health check, DNS lookup.</p>
+
+        <h3>TCP Client</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — TCP client</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Kết nối TCP
+$conn = tcp_connect("example.com", 80, 5000); // timeout 5000ms
+if ($conn == false) { echo "Kết nối thất bại\n"; }
+
+// Gửi / nhận
+tcp_write($conn, "GET / HTTP/1.0\r\nHost: example.com\r\n\r\n");
+$resp = tcp_read($conn, 4096);
+echo $resp;
+
+echo tcp_remote_addr($conn); // "93.184.216.34:80"
+echo tcp_local_addr($conn);  // "192.168.1.5:54321"
+tcp_set_deadline($conn, 3000); // timeout 3s cho lần đọc/ghi tiếp
+tcp_close($conn);</code></pre>
+        </div>
+
+        <h3>TCP Server</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — TCP server</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Cách 1: tcp_serve (blocking, xử lý từng conn trong goroutine)
+tcp_serve(9000, function($conn) {
+    $data = tcp_read($conn, 1024);
+    tcp_write($conn, "Echo: " . $data);
+    tcp_close($conn);
+});
+
+// Cách 2: Manual accept loop
+$server = tcp_listen(9000);
+echo "Listening: " . tcp_server_addr($server) . "\n";
+while (true) {
+    $conn = tcp_accept($server);
+    spawn {
+        $msg = tcp_read($conn, 1024);
+        tcp_write($conn, strtoupper($msg));
+        tcp_close($conn);
+    }
+}
+tcp_server_close($server);</code></pre>
+        </div>
+
+        <h3>UDP</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — UDP</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// UDP gửi (fire-and-forget)
+udp_send("logger.internal", 5140, "log message");
+
+// UDP server
+$sock = udp_listen(8125);
+while (true) {
+    [$data, $addr] = udp_recv($sock, 512);
+    echo "From $addr: $data\n";
+    udp_reply($sock, "ACK", $addr); // phản hồi về địa chỉ gốc
+}
+udp_server_close($sock);</code></pre>
+        </div>
+
+        <h3>DNS</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — DNS</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+$ips = dns_lookup("github.com");
+// ["140.82.121.4", "140.82.121.3"]
+
+$mxs = dns_lookup_mx("gmail.com");
+// [{"host": "gmail-smtp-in.l.google.com.", "pref": 5}, ...]
+foreach ($mxs as $mx) {
+    echo $mx["host"] . " (priority: " . $mx["pref"] . ")\n";
+}</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>tcp_connect($host, $port [, $timeout_ms])</code></td><td>Kết nối TCP → conn resource hoặc false</td></tr>
+            <tr><td><code>tcp_write($conn, $data)</code></td><td>Gửi data → số bytes đã ghi hoặc false</td></tr>
+            <tr><td><code>tcp_read($conn [, $size])</code></td><td>Đọc data → string hoặc false khi đóng</td></tr>
+            <tr><td><code>tcp_close($conn)</code></td><td>Đóng TCP connection</td></tr>
+            <tr><td><code>tcp_set_deadline($conn, $ms)</code></td><td>Đặt deadline cho đọc/ghi tiếp theo</td></tr>
+            <tr><td><code>tcp_remote_addr($conn)</code></td><td>"host:port" của remote</td></tr>
+            <tr><td><code>tcp_local_addr($conn)</code></td><td>"host:port" của local</td></tr>
+            <tr><td><code>tcp_listen($port [, $host])</code></td><td>Tạo TCP server → server resource</td></tr>
+            <tr><td><code>tcp_accept($server)</code></td><td>Chờ và chấp nhận conn mới (blocking)</td></tr>
+            <tr><td><code>tcp_serve($port, $fn [, $host])</code></td><td>TCP server vòng lặp — gọi $fn($conn) trong goroutine</td></tr>
+            <tr><td><code>tcp_server_close($server)</code></td><td>Đóng server</td></tr>
+            <tr><td><code>tcp_server_addr($server)</code></td><td>"host:port" server đang lắng nghe</td></tr>
+            <tr><td><code>udp_send($host, $port, $data)</code></td><td>Gửi UDP datagram</td></tr>
+            <tr><td><code>udp_listen($port [, $host])</code></td><td>Tạo UDP server → sock resource</td></tr>
+            <tr><td><code>udp_recv($sock [, $size])</code></td><td>Nhận datagram → [$data, $addr]</td></tr>
+            <tr><td><code>udp_reply($sock, $data, $addr)</code></td><td>Gửi về địa chỉ đã nhận ($addr từ udp_recv)</td></tr>
+            <tr><td><code>udp_server_close($sock)</code></td><td>Đóng UDP server</td></tr>
+            <tr><td><code>dns_lookup($host)</code></td><td>Resolve hostname → array IP strings hoặc false</td></tr>
+            <tr><td><code>dns_lookup_mx($domain)</code></td><td>Lấy MX records → array {host, pref} hoặc false</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── FILE WATCH -->
+      <section class="doc-section" id="stdlib-filewatch">
+        <h2><span class="section-num">36</span> Thư viện: File Watch</h2>
+        <p>Theo dõi thay đổi file/thư mục theo thời gian thực — dùng để hot reload config, tự build, phát hiện upload.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Theo dõi 1 file
+$w = file_watch("config.json", function($event) {
+    echo "File thay đổi: " . $event["path"] . " op: " . $event["op"] . "\n";
+    // op: "create" | "write" | "remove" | "rename" | "chmod"
+});
+
+// Theo dõi thư mục đệ quy
+$w2 = file_watch("templates/", function($event) {
+    if ($event["op"] == "write") {
+        echo "Template " . $event["path"] . " đã cập nhật\n";
+    }
+}, ["recursive" =&gt; true]);
+
+// Thêm/bỏ path từ watcher đang chạy
+file_watch_add($w2, "static/");
+file_watch_remove($w2, "templates/old/");
+
+// Dừng theo dõi
+sleep(60);
+file_watch_stop($w);
+file_watch_stop($w2);</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>file_watch($path, $fn [, $opts])</code></td><td>Bắt đầu theo dõi. opts: <code>["recursive" =&gt; true]</code> → watcher resource</td></tr>
+            <tr><td><code>file_watch_stop($watcher)</code></td><td>Dừng và giải phóng watcher</td></tr>
+            <tr><td><code>file_watch_add($watcher, $path)</code></td><td>Thêm path mới vào watcher đang chạy</td></tr>
+            <tr><td><code>file_watch_remove($watcher, $path)</code></td><td>Bỏ path khỏi watcher</td></tr>
+          </tbody>
+        </table>
+        <p>Callback nhận map: <code>{"path": "...", "op": "create|write|remove|rename|chmod"}</code></p>
+      </section>
+
+      <!-- ─────────────────────────────────── IN-MEMORY CACHE -->
+      <section class="doc-section" id="stdlib-cache">
+        <h2><span class="section-num">37</span> Thư viện: In-memory Cache</h2>
+        <p>Cache nhanh trong bộ nhớ với TTL tự động. Không cần Redis — phù hợp cho single-process app.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Lưu với TTL 60 giây
+cache_set("user:42", ["name" =&gt; "Alice", "role" =&gt; "admin"], 60);
+
+// Lấy — null nếu hết hạn hoặc không có
+$user = cache_get("user:42");
+if ($user != null) {
+    echo "Cache hit: " . $user["name"];
+} else {
+    // load từ DB và cache lại
+    $user = db_query_row("SELECT * FROM users WHERE id = 42");
+    cache_set("user:42", $user, 300); // cache 5 phút
+}
+
+// Xóa key
+cache_delete("user:42");
+
+// Xóa toàn bộ cache
+cache_flush();</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>cache_set($key, $value [, $ttl_sec])</code></td><td>Lưu vào cache. TTL tính bằng giây, mặc định không hết hạn</td></tr>
+            <tr><td><code>cache_get($key)</code></td><td>Lấy giá trị → null nếu không có hoặc hết hạn</td></tr>
+            <tr><td><code>cache_delete($key)</code></td><td>Xóa key khỏi cache</td></tr>
+            <tr><td><code>cache_flush()</code></td><td>Xóa toàn bộ cache</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── PROFILING -->
+      <section class="doc-section" id="stdlib-profiling">
+        <h2><span class="section-num">38</span> Thư viện: Profiling</h2>
+        <p>Đo thời gian thực thi từng function trong VM — giúp tìm bottleneck.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+prof_start(); // bật profiler
+
+// ... chạy code cần đo ...
+$data = db_query("SELECT * FROM products");
+foreach ($data as $item) {
+    process_item($item);
+}
+
+prof_stop(); // tắt profiler
+
+// In báo cáo: function name, call count, total time
+echo prof_report();</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>prof_start()</code></td><td>Bật profiling VM — theo dõi tất cả function calls</td></tr>
+            <tr><td><code>prof_stop()</code></td><td>Tắt profiling</td></tr>
+            <tr><td><code>prof_report()</code></td><td>Trả về string báo cáo: function, call count, thời gian tổng</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── ERROR CHAINING -->
+      <section class="doc-section" id="stdlib-error">
+        <h2><span class="section-num">39</span> Thư viện: Error Chaining</h2>
+        <p>Tạo và bọc lỗi có nguyên nhân (cause chain) — giống Go errors.Wrap hoặc PHP's previous exception.</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Tạo lỗi gốc
+$dbErr = error_create("Kết nối DB thất bại", 500);
+
+// Bọc lỗi với context
+$svcErr = error_wrap($dbErr, "Không thể nạp dữ liệu người dùng", 503);
+$apiErr = error_wrap($svcErr, "Request thất bại");
+
+// Kiểm tra lỗi
+if (is_error($apiErr)) {
+    // Lấy toàn bộ chuỗi thông báo
+    echo error_chain_message($apiErr);
+    // → "Request thất bại: caused by: Không thể nạp dữ liệu người dùng: caused by: Kết nối DB thất bại"
+
+    // Lấy nguyên nhân gốc
+    $root = error_cause(error_cause($apiErr));
+    echo $root["message"]; // "Kết nối DB thất bại"
+    echo $root["code"];    // 500
+}</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>error_create($msg [, $code])</code></td><td>Tạo error map: <code>{error:true, message, code}</code></td></tr>
+            <tr><td><code>error_wrap($cause, $msg [, $code])</code></td><td>Bọc lỗi với context mới — lưu nguyên nhân gốc vào <code>cause</code></td></tr>
+            <tr><td><code>error_cause($err)</code></td><td>Lấy nguyên nhân trực tiếp của lỗi đã wrap</td></tr>
+            <tr><td><code>error_chain_message($err)</code></td><td>Chuỗi thông báo toàn bộ chain: "msg1: caused by: msg2: ..."</td></tr>
+            <tr><td><code>is_error($v)</code></td><td>Kiểm tra $v có phải error map không → bool</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ─────────────────────────────────── BINARY / BYTES -->
+      <section class="doc-section" id="stdlib-bytes">
+        <h2><span class="section-num">40</span> Thư viện: Binary / Bytes</h2>
+        <p>Xử lý dữ liệu nhị phân — binary protocol, mã hóa/giải mã, file binary, pack/unpack.</p>
+
+        <h3>Bytes (KBytes type)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// Tạo bytes
+$b = bytes_from_string("Hello");   // string → KBytes
+$b2 = bytes_from_hex("deadbeef");  // hex string → KBytes
+
+// Thao tác
+echo bytes_length($b);         // 5
+echo bytes_get($b, 0);         // 72 (ASCII 'H')
+bytes_set($b, 0, 104);         // sửa byte đầu thành 'h'
+$slice = bytes_slice($b, 1, 3); // bytes[1..3)
+$joined = bytes_concat($b, $b2);
+
+// Chuyển đổi
+echo bytes_to_string($b);      // "hello"
+echo bytes_to_hex($b);         // "68656c6c6f"
+
+// File binary
+$img = file_read_bytes("photo.jpg");
+echo bytes_length($img);       // kích thước file
+file_write_bytes("copy.jpg", $img);</code></pre>
+        </div>
+
+        <h3>Pack / Unpack (PHP-compatible)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl — pack/unpack</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// pack(format, ...values) → binary string
+// Format codes: N=uint32 big-endian, n=uint16 big-endian, C=uint8, A=string
+$header = pack("NnC", 1000, 42, 7);
+
+// unpack — positional
+$vals = unpack("NnC", $header);
+echo $vals[0]; // 1000 (uint32)
+echo $vals[1]; // 42   (uint16)
+echo $vals[2]; // 7    (uint8)
+
+// unpack — named (PHP style: "N1len/n1flags")
+$data = unpack("N1length/n1flags/C1version", $header);
+echo $data["length"]; // 1000
+echo $data["flags"];  // 42</code></pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>bytes_from_string($s)</code></td><td>string → KBytes</td></tr>
+            <tr><td><code>bytes_to_string($b)</code></td><td>KBytes → string</td></tr>
+            <tr><td><code>bytes_length($b)</code></td><td>Số bytes</td></tr>
+            <tr><td><code>bytes_get($b, $i)</code></td><td>Lấy byte tại index $i → int</td></tr>
+            <tr><td><code>bytes_set($b, $i, $v)</code></td><td>Sửa byte tại index</td></tr>
+            <tr><td><code>bytes_slice($b, $start, $end)</code></td><td>Cắt [start, end)</td></tr>
+            <tr><td><code>bytes_concat($a, $b)</code></td><td>Nối hai KBytes</td></tr>
+            <tr><td><code>bytes_to_hex($b)</code></td><td>KBytes → hex string</td></tr>
+            <tr><td><code>bytes_from_hex($hex)</code></td><td>Hex string → KBytes</td></tr>
+            <tr><td><code>file_read_bytes($path)</code></td><td>Đọc file → KBytes</td></tr>
+            <tr><td><code>file_write_bytes($path, $b)</code></td><td>Ghi KBytes vào file</td></tr>
+            <tr><td><code>pack($fmt, ...)</code></td><td>Đóng gói values thành binary string (PHP format)</td></tr>
+            <tr><td><code>unpack($fmt, $data)</code></td><td>Giải gói binary → array hoặc map (named format)</td></tr>
           </tbody>
         </table>
       </section>

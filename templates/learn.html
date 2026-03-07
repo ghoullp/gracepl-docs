@@ -681,6 +681,10 @@ $keys = array_keys($user);   // ["ten","tuoi","email","city"]
 $vals = array_values($user); // ["Alice",25,"alice@example.com","Hà Nội"]</code></pre>
         </div>
 
+        <div class="callout callout-warning">
+          <b>⚠️ array_push trả về số, không phải mảng:</b> <code>array_push($arr, $val)</code> sửa <code>$arr</code> trực tiếp và trả về <strong>số phần tử</strong> mới. Không viết <code>$arr = array_push($arr, $val)</code> — câu đó sẽ ghi đè <code>$arr</code> bằng một số nguyên.
+        </div>
+
         <div class="lesson-complete-btn" data-lesson="11">✅ Đánh dấu đã học xong</div>
       </section>
 
@@ -1029,10 +1033,17 @@ echo "API server: http://localhost:8080\n";
 http_serve(":8080");</code></pre>
         </div>
 
+        <div class="callout callout-warning">
+          <b>⚠️ Route wildcards không hoạt động:</b> <code>/*</code> là path literal, không phải wildcard. Chỉ dùng <code>:param</code> hoặc <code>{param}</code> cho segment động.<br>
+          <code>/news/:slug</code> ✅ — <code>/news/*</code> ❌
+        </div>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Kiểm tra key query string:</b> <code>$req["query"]["x"] != false</code> không đáng tin cậy vì <code>null != false</code> trả về <code>true</code> trong GracePL. Dùng <code>isset($req["query"]["x"])</code>.
+        </div>
+
         <div class="lesson-complete-btn" data-lesson="17">✅ Đánh dấu đã học xong</div>
       </section>
-
-      <!-- ═══════════════════════════════════════════════ LESSON 18 -->
       <section class="doc-section learn-lesson" id="json-api" data-lesson="18">
         <h2><span class="lesson-badge">Bài 18</span> Xây dựng REST API hoàn chỉnh</h2>
 
@@ -1188,6 +1199,12 @@ http_serve(":8080");</code></pre>
 
         <div class="callout callout-tip">
           <b>💡 Bảo mật XSS:</b> Biến <code>{{ten}}</code> tự động escape HTML — <code>&lt;</code> thành <code>&amp;lt;</code>. Nếu cần xuất HTML thô (trusted), dùng <code>{{ten | raw}}</code>.
+        </div>
+
+        <div class="callout callout-warning">
+          <b>⚠️ Biến chứa HTML markup phải dùng <code>| raw</code>:</b> Khi bạn render nhiều card/item thành chuỗi HTML rồi truyền vào template cha, biến đó phải dùng <code>| raw</code>:<br>
+          <code>{{cards}}</code> → hiển thị text thô <code>&amp;lt;div&amp;gt;...&amp;lt;/div&amp;gt;</code> ❌<br>
+          <code>{{cards | raw}}</code> → render HTML đúng cách ✅
         </div>
 
         <div class="lesson-complete-btn" data-lesson="19">✅ Đánh dấu đã học xong</div>

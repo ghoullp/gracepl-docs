@@ -19,6 +19,15 @@ http_handle("/", function($req) {
     return $htmlContent;
 });
 
+http_handle("/learn", function($req) {
+    
+    // Do file html này là một file tài liệu thô có chứa rất nhiều dấu ngoặc nhọn
+    // Nếu dùng hàm `render`, Engine sẽ tưởng là biến và cố parse gây lỗi Panic
+    // Giải pháp bảo vệ file chuẩn xác nhất là đọc file RAW và trả về dạng HTML Text
+    $htmlContent = include("templates/learn.html");
+    return $htmlContent;
+});
+
 // Chạy ứng dụng
 echo "\n=======================================\n";
 echo "🚀 Docs Site đang chạy tại http://localhost:$port\n";
