@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GracePL — Tài liệu chính thức v2.1</title>
+  <title>GracePL — Tài liệu chính thức v3.0</title>
   <meta name="description"
-    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v2.1 — cú pháp PHP, hiệu năng Go." />
+    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v3.0 (Full-Stack) — cú pháp PHP, hiệu năng Go." />
 
   <!-- Highlight.js (PHP/GracePL syntax) -->
   <link rel="stylesheet"
@@ -14,7 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
 
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -33,7 +33,7 @@
       <span class="logo-text">Grace<span>PL</span></span>
     </div>
     <div class="header-right">
-      <span class="header-badge">v2.1</span>
+      <span class="header-badge">v3.0 Full-Stack</span>
       <a href="https://github.com/ghoullp/gracepl-lang" class="header-link">GitHub</a>
       <a href="../README.md" class="header-link">README</a>
       <a href="../LANGUAGE_SPEC.md" class="header-link">Spec</a>
@@ -128,7 +128,7 @@
 
       <!-- HERO -->
       <div class="hero" id="intro">
-        <div class="hero-badge">🚀 Production-Ready · v2.1</div>
+        <div class="hero-badge">🚀 Production-Ready · v3.0 Full-Stack</div>
         <h1>Tài liệu <span>GracePL</span></h1>
         <p>Ngôn ngữ lập trình production-ready với cú pháp quen thuộc như PHP, hiệu năng cao của Go. Bytecode VM,
           concurrency thực sự, module system, structured logging, metrics, circuit breaker và hơn 335 hàm tích hợp.</p>
@@ -1194,6 +1194,11 @@ event_off("user.created");</code></pre>
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
+// Background Worker (Chạy ngầm Async Thread)
+go_run(function() {
+    log_info("Running async task...");
+});
+
 // Schedule v&oacute;i @every syntax
 $cleanup = cron("@every 5m", function() {
     db_exec("DELETE FROM sessions WHERE expired_at &lt; NOW()");
@@ -1228,14 +1233,19 @@ $uid = session_get("user_id"); // 42
 session_destroy();</code></pre>
         </div>
 
-        <h3>Database Pool Configuration</h3>
+        <h3>Database Core (ORM &amp; Pool Config)</h3>
         <div class="code-block">
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// db_pool_config(maxOpen, maxIdle, connMaxLifeSec)
+// 1. Connection Pool
 db_pool_config(50, 10, 300);
-db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");</code></pre>
+db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");
+
+// 2. Map ORM Builder
+$id = db_insert("users", ["name" =&gt; "Alice", "role" =&gt; "admin"]);
+$ok = db_update("users", ["role" =&gt; "user"], ["id" =&gt; $id]);
+db_delete("users", ["status" =&gt; "banned"]);</code></pre>
         </div>
 
         <h3>Redis Configuration</h3>
@@ -1450,19 +1460,23 @@ if (count($errors) > 0) {
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               chép</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// ── HTTP Server ────────────────────────────────
-http_handle("/", function($req) {
-    http_json(["message" =&gt; "Hello from GracePL!"]);
+// ── HTTP Router &amp; Methods ───────────────────
+http_get("/", function($req) {
+    http_json(["message" =&gt; "Welcome to GracePL v3.0!"]);
 });
 
-http_handle("/users/:id", function($req) {
+http_post("/users/:id", function($req) {
     $id = $req["params"]["id"];
-    $user = db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
-    if (!$user) { return http_json(["error" =&gt; "Not found"], 404); }
-    http_json($user);
+    $body = json_decode($req["body"]);
+    $user = db_update("users", ["name" =&gt; $body["name"]], ["id" =&gt; $id]);
+    http_json(["status" =&gt; "ok", "updated" =&gt; $user]);
 });
 
 // Production middleware stack
+http_use(function($req, $res, $next) {
+    session_start();
+    return $next();
+});
 http_request_id();                            // unique request ID
 http_panic_recover();                         // catch panics
 http_cors_whitelist(["https://myapp.com"]);   // CORS whitelist
@@ -2148,7 +2162,7 @@ db_stmt_close($stmt);</code></pre>
     </div>
   </footer>
 
-  <script src="/static/app.js"></script>
+  <script src="app.js"></script>
 </body>
 
 </html>
