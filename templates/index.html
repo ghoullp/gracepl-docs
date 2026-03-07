@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GracePL — Tài liệu chính thức v3.0</title>
+  <title>GracePL — Tài liệu chính thức v2.1</title>
   <meta name="description"
-    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v3.0 (Full-Stack) — cú pháp PHP, hiệu năng Go." />
+    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v2.1 — cú pháp PHP, hiệu năng Go." />
 
   <!-- Highlight.js (PHP/GracePL syntax) -->
   <link rel="stylesheet"
@@ -14,7 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 
 <body>
@@ -33,7 +33,7 @@
       <span class="logo-text">Grace<span>PL</span></span>
     </div>
     <div class="header-right">
-      <span class="header-badge">v3.0 Full-Stack</span>
+      <span class="header-badge">v2.1</span>
       <a href="https://github.com/ghoullp/gracepl-lang" class="header-link">GitHub</a>
       <a href="../README.md" class="header-link">README</a>
       <a href="../LANGUAGE_SPEC.md" class="header-link">Spec</a>
@@ -128,7 +128,7 @@
 
       <!-- HERO -->
       <div class="hero" id="intro">
-        <div class="hero-badge">🚀 Production-Ready · v3.0 Full-Stack</div>
+        <div class="hero-badge">🚀 Production-Ready · v2.1</div>
         <h1>Tài liệu <span>GracePL</span></h1>
         <p>Ngôn ngữ lập trình production-ready với cú pháp quen thuộc như PHP, hiệu năng cao của Go. Bytecode VM,
           concurrency thực sự, module system, structured logging, metrics, circuit breaker và hơn 335 hàm tích hợp.</p>
@@ -1194,11 +1194,6 @@ event_off("user.created");</code></pre>
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// Background Worker (Chạy ngầm Async Thread)
-go_run(function() {
-    log_info("Running async task...");
-});
-
 // Schedule v&oacute;i @every syntax
 $cleanup = cron("@every 5m", function() {
     db_exec("DELETE FROM sessions WHERE expired_at &lt; NOW()");
@@ -1233,19 +1228,14 @@ $uid = session_get("user_id"); // 42
 session_destroy();</code></pre>
         </div>
 
-        <h3>Database Core (ORM &amp; Pool Config)</h3>
+        <h3>Database Pool Configuration</h3>
         <div class="code-block">
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// 1. Connection Pool
+// db_pool_config(maxOpen, maxIdle, connMaxLifeSec)
 db_pool_config(50, 10, 300);
-db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");
-
-// 2. Map ORM Builder
-$id = db_insert("users", ["name" =&gt; "Alice", "role" =&gt; "admin"]);
-$ok = db_update("users", ["role" =&gt; "user"], ["id" =&gt; $id]);
-db_delete("users", ["status" =&gt; "banned"]);</code></pre>
+db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");</code></pre>
         </div>
 
         <h3>Redis Configuration</h3>
@@ -1453,6 +1443,44 @@ if (count($errors) > 0) {
         </div>
       </section>
 
+      <!-- ─────────────────────────────────── DEBUGGER -->
+      <section class="doc-section" id="debugger">
+        <h2><span class="section-num">23b</span> Debugger (DAP — VS Code)</h2>
+        <p>GracePL hỗ trợ <strong>Debug Adapter Protocol (DAP)</strong>, tích hợp trực tiếp với VS Code debugger.</p>
+
+        <h3>Khởi động</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">bash</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-bash">gracepl debug myapp.gp
+# Lắng nghe DAP trên stdin/stdout — VS Code kết nối tự động</code></pre>
+        </div>
+
+        <h3>Cấu hình VS Code (launch.json)</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">json</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-json">{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "gracepl",
+      "request": "launch",
+      "name": "Debug GracePL",
+      "program": "${file}"
+    }
+  ]
+}</code></pre>
+        </div>
+
+        <h3>Tính năng</h3>
+        <ul>
+          <li>Breakpoints (line breakpoints)</li>
+          <li>Step Over / Step Into / Step Out</li>
+          <li>Xem locals, globals, upvalues</li>
+          <li>Call stack</li>
+          <li>Debug Console (eval expression)</li>
+        </ul>
+      </section>
+
       <!-- ─────────────────────────────────── HTTP -->
       <section class="doc-section" id="http">
         <h2><span class="section-num">24</span> HTTP &amp; Web</h2>
@@ -1460,23 +1488,19 @@ if (count($errors) > 0) {
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               chép</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// ── HTTP Router &amp; Methods ───────────────────
-http_get("/", function($req) {
-    http_json(["message" =&gt; "Welcome to GracePL v3.0!"]);
+// ── HTTP Server ────────────────────────────────
+http_handle("/", function($req) {
+    http_json(["message" =&gt; "Hello from GracePL!"]);
 });
 
-http_post("/users/:id", function($req) {
+http_handle("/users/:id", function($req) {
     $id = $req["params"]["id"];
-    $body = json_decode($req["body"]);
-    $user = db_update("users", ["name" =&gt; $body["name"]], ["id" =&gt; $id]);
-    http_json(["status" =&gt; "ok", "updated" =&gt; $user]);
+    $user = db_query_row("SELECT * FROM users WHERE id = ?", [$id]);
+    if (!$user) { return http_json(["error" =&gt; "Not found"], 404); }
+    http_json($user);
 });
 
 // Production middleware stack
-http_use(function($req, $res, $next) {
-    session_start();
-    return $next();
-});
 http_request_id();                            // unique request ID
 http_panic_recover();                         // catch panics
 http_cors_whitelist(["https://myapp.com"]);   // CORS whitelist
@@ -1985,8 +2009,60 @@ file_put_contents("output.json", json_encode($result, JSON_PRETTY_PRINT));</code
         </div>
       </section>
 
+      <!-- ─────────────────────────────────── STDLIB HTTP CLIENT -->
+      <section class="doc-section" id="stdlib-http">
+        <h2><span class="section-num">30</span> Thư viện: HTTP Client</h2>
+        <p>Gọi API bên ngoài bằng các hàm HTTP client tích hợp sẵn.</p>
+        <table>
+          <thead><tr><th>Hàm</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>http_get($url, $headers?)</code></td><td>GET request, trả về response body</td></tr>
+            <tr><td><code>http_post($url, $body, $headers?)</code></td><td>POST request</td></tr>
+            <tr><td><code>http_put($url, $body, $headers?)</code></td><td>PUT request</td></tr>
+            <tr><td><code>http_delete($url, $headers?)</code></td><td>DELETE request</td></tr>
+            <tr><td><code>http_request($method, $url, $body?, $headers?)</code></td><td>Generic HTTP request tùy chỉnh</td></tr>
+            <tr><td><code>http_download($url, $path)</code></td><td>Tải file về đĩa</td></tr>
+          </tbody>
+        </table>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao chép</button></div>
+          <pre><code class="language-php">&lt;gp&gt;
+// GET request
+$body = http_get("https://api.example.com/users");
+$data = json_decode($body);
+echo $data[0]["name"];
+
+// POST với JSON body
+$token = "secret";
+$resp = http_post(
+    "https://api.example.com/users",
+    json_encode(["name" => "Alice", "email" => "alice@example.com"]),
+    ["Content-Type" => "application/json", "Authorization" => "Bearer $token"]
+);
+$created = json_decode($resp);
+echo "Created user #" . $created["id"];
+
+// PUT — cập nhật resource
+http_put("https://api.example.com/users/1",
+    json_encode(["name" => "Alice Updated"]),
+    ["Content-Type" => "application/json"]);
+
+// DELETE
+http_delete("https://api.example.com/users/1");
+
+// Generic request
+$resp = http_request("PATCH", "https://api.example.com/users/1",
+    json_encode(["active" => true]),
+    ["Content-Type" => "application/json"]);
+
+// Download file về đĩa
+http_download("https://example.com/report.pdf", "downloads/report.pdf");
+echo "Tải xong!";</code></pre>
+        </div>
+      </section>
+
       <section class="doc-section" id="stdlib-db">
-        <h2><span class="section-num">30</span> Thư viện: Database</h2>
+        <h2><span class="section-num">31</span> Thư viện: Database</h2>
         <div class="code-block">
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               chép</button></div>
@@ -2040,7 +2116,7 @@ db_stmt_close($stmt);</code></pre>
       </section>
 
       <section class="doc-section" id="stdlib-chan">
-        <h2><span class="section-num">31</span> Thư viện: Channel &amp; Sync</h2>
+        <h2><span class="section-num">32</span> Thư viện: Channel &amp; Sync</h2>
         <table>
           <thead>
             <tr>
@@ -2162,7 +2238,7 @@ db_stmt_close($stmt);</code></pre>
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="/static/app.js"></script>
 </body>
 
 </html>
