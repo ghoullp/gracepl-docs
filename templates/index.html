@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GracePL — Tài liệu chính thức v3.0</title>
+  <title>GracePL — Tài liệu chính thức v3.0.0</title>
   <meta name="description"
-    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v3.0 — cú pháp PHP, hiệu năng Go." />
+    content="Tài liệu chính thức cho ngôn ngữ lập trình GracePL v3.0.0 — cú pháp PHP, hiệu năng Go, 350+ built-in functions." />
 
   <!-- Highlight.js (PHP/GracePL syntax) -->
   <link rel="stylesheet"
@@ -33,7 +33,7 @@
       <span class="logo-text">Grace<span>PL</span></span>
     </div>
     <div class="header-right">
-      <span class="header-badge">v3.0</span>
+      <span class="header-badge">v3.0.0</span>
       <a href="/learn" class="header-link" style="color:#a78bfa;font-weight:600">📚 Tutorial</a>
       <a href="https://github.com/ghoullp/gracepl-lang" class="header-link">GitHub</a>
       <a href="../README.md" class="header-link">README</a>
@@ -1047,14 +1047,10 @@ spawn {
     }
 };
 
-// Context với value
-$ctx = ctx_with_value($ctx, "user_id", 42);
-$uid = ctx_value($ctx, "user_id");  // 42
-
-// Truyền qua hàm
+// Truyền context qua hàm
 function downloadFile($ctx, $url) {
     if (ctx_done($ctx)) return null;
-    return http_get_with_context($ctx, $url);
+    return http_get($url);
 }</code></pre>
         </div>
       </section>
@@ -1085,23 +1081,12 @@ for ($i = 0; $i < 100; $i++) {
 wg_wait($wg);
 echo $counter; // đúng 100
 
-// RWMutex — cho phép nhiều readers
-$rw   = rwmutex_make();
-$data = ["key" => "value"];
-
-function readData() {
-    global $rw, $data;
-    rwmutex_rlock($rw);
-    $v = $data["key"];
-    rwmutex_runlock($rw);
-    return $v;
-}
-
-function writeData($val) {
-    global $rw, $data;
-    rwmutex_lock($rw);
-    $data["key"] = $val;
-    rwmutex_unlock($rw);
+// mutex_try_lock — non-blocking
+if (mutex_try_lock($mu)) {
+    // critical section
+    mutex_unlock($mu);
+} else {
+    echo "lock busy";
 }</code></pre>
         </div>
       </section>
@@ -1247,9 +1232,8 @@ session_destroy();</code></pre>
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// db_pool_config(maxOpen, maxIdle, connMaxLifeSec)
-db_pool_config(50, 10, 300);
-db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");</code></pre>
+db_connect("user:pass@tcp(host:3306)/mydb");
+db_set_timeout(5000);</code></pre>
         </div>
 
         <h3>Redis Configuration</h3>
@@ -1257,9 +1241,9 @@ db_connect("user:pass@tcp(host:3306)/mydb?parseTime=true");</code></pre>
           <div class="code-block-header"><span class="code-lang">gracepl</span><button class="copy-btn">Sao
               ch&eacute;p</button></div>
           <pre><code class="language-php">&lt;gp&gt;
-// redis_config(poolSize, timeoutMs, dialTimeoutMs)
-redis_config(20, 5000, 3000);
-redis_connect("redis.cluster:6379", "password", "0");</code></pre>
+redis_connect("redis.cluster:6379", "password", "0");
+redis_set("key", "value");
+$val = redis_get("key");</code></pre>
         </div>
       </section>
 
@@ -1940,20 +1924,20 @@ http_route_get("/api/users", function($req) {
 
 http_route_post("/api/users", function($req) {
     $data = json_decode($req["body"]);
-    $id = db_insert("users", ["name" =&gt; $data["name"]]);
-    return http_json(["id" =&gt; $id], 201);
+    db_exec("INSERT INTO users (name) VALUES (?)", [$data["name"]]);
+    return http_json(["status" =&gt; "created"], 201);
 });
 
 http_route_put("/api/users/:id", function($req) {
     $id = $req["params"]["id"];
     $data = json_decode($req["body"]);
-    db_update("users", ["name" =&gt; $data["name"]], "id = ?", [$id]);
+    db_exec("UPDATE users SET name = ? WHERE id = ?", [$data["name"], $id]);
     return http_json(["updated" =&gt; true]);
 });
 
 http_route_delete("/api/users/:id", function($req) {
     $id = $req["params"]["id"];
-    db_delete("users", "id = ?", [$id]);
+    db_exec("DELETE FROM users WHERE id = ?", [$id]);
     return http_json(["deleted" =&gt; true]);
 });
 
@@ -1985,10 +1969,6 @@ http_serve(":8080");</code></pre>
             <tr>
               <td><code>strlen($s)</code></td>
               <td>Độ dài chuỗi (bytes)</td>
-            </tr>
-            <tr>
-              <td><code>mb_strlen($s)</code></td>
-              <td>Độ dài chuỗi (ký tự UTF-8)</td>
             </tr>
             <tr>
               <td><code>strtoupper/lower($s)</code></td>
@@ -2223,10 +2203,6 @@ http_serve(":8080");</code></pre>
               <td>Số ngẫu nhiên nguyên</td>
             </tr>
             <tr>
-              <td><code>frand()</code></td>
-              <td>Số ngẫu nhiên float [0,1)</td>
-            </tr>
-            <tr>
               <td><code>intdiv($a, $b)</code></td>
               <td>Chia nguyên</td>
             </tr>
@@ -2308,9 +2284,6 @@ $map = json_decode($json);
 echo $map["name"];   // Alice
 echo $map["tags"][0]; // go
 
-// Validate
-json_valid('{"key":"val"}');  // true
-json_valid('bad json');        // false
 
 // Từ file
 $config = json_decode(file_get_contents("config.json"));
@@ -2377,11 +2350,12 @@ echo "Tải xong!";</code></pre>
               chép</button></div>
           <pre><code class="language-php">&lt;gp&gt;
 // Kết nối
-db_connect("mysql://user:pass@localhost:3306/mydb");
-db_connect("postgres://user:pass@localhost/mydb");
-db_connect("sqlite://./data.db");
+// Kết nối (MySQL, PostgreSQL, SQLite)
+db_connect("user:pass@tcp(localhost:3306)/mydb");
+// db_connect("postgres://user:pass@localhost/mydb");
+// db_connect("sqlite://./data.db");
 
-// Query
+// Query — trả về array of maps
 $rows = db_query("SELECT id, name FROM users WHERE active = ?", [1]);
 foreach ($rows as $row) {
     echo "{$row['id']}: {$row['name']}\n";
@@ -2390,37 +2364,27 @@ foreach ($rows as $row) {
 // Single row
 $user = db_query_row("SELECT * FROM users WHERE id = ?", [42]);
 
-// Single value
-$count = db_query_value("SELECT COUNT(*) FROM users");
-
-// Insert
-$id = db_insert("users", [
-    "name"  => "Alice",
-    "email" => "alice@example.com"
-]);
-echo $id; // auto-increment id
-
-// Update
-$affected = db_update("users", ["name" => "Alice Updated"], "id = ?", [42]);
-
-// Delete
-$deleted = db_delete("users", "id = ?", [42]);
-
-// Raw execute
-db_execute("CREATE TABLE IF NOT EXISTS logs (id INT AUTO_INCREMENT, msg TEXT)");
+// Execute (INSERT, UPDATE, DELETE, DDL)
+db_exec("INSERT INTO users (name, email) VALUES (?, ?)", ["Alice", "a@b.c"]);
+db_exec("UPDATE users SET name = ? WHERE id = ?", ["Alice Updated", 42]);
+db_exec("DELETE FROM users WHERE id = ?", [42]);
 
 // Transaction
-db_transaction(function() {
-    db_execute("UPDATE accounts SET balance = balance - 100 WHERE id = 1");
-    db_execute("UPDATE accounts SET balance = balance + 100 WHERE id = 2");
-});
+$tx = db_begin();
+db_tx_exec($tx, "UPDATE accounts SET balance = balance - 100 WHERE id = ?", [1]);
+db_tx_exec($tx, "UPDATE accounts SET balance = balance + 100 WHERE id = ?", [2]);
+db_commit($tx);
 
 // Prepared statements
 $stmt = db_prepare("INSERT INTO logs (msg) VALUES (?)");
 for ($i = 0; $i < 1000; $i++) {
     db_stmt_exec($stmt, ["log message $i"]);
 }
-db_stmt_close($stmt);</code></pre>
+db_stmt_close($stmt);
+
+// Timeout + close
+db_set_timeout(5000);
+db_close();</code></pre>
         </div>
       </section>
 
@@ -2489,18 +2453,6 @@ db_stmt_close($stmt);</code></pre>
             <tr>
               <td><code>mutex_try_lock($m)</code></td>
               <td>Try lock → bool</td>
-            </tr>
-            <tr>
-              <td><code>rwmutex_make()</code></td>
-              <td>Tạo RWMutex</td>
-            </tr>
-            <tr>
-              <td><code>rwmutex_lock/unlock($m)</code></td>
-              <td>Write lock/unlock</td>
-            </tr>
-            <tr>
-              <td><code>rwmutex_rlock/runlock($m)</code></td>
-              <td>Read lock/unlock</td>
             </tr>
             <tr>
               <td><code>ctx_make()</code></td>

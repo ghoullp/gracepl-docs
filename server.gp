@@ -15,7 +15,7 @@ http_handle("/", function($req) {
     // Do file html này là một file tài liệu thô có chứa rất nhiều dấu ngoặc nhọn
     // Nếu dùng hàm `render`, Engine sẽ tưởng là biến và cố parse gây lỗi Panic
     // Giải pháp bảo vệ file chuẩn xác nhất là đọc file RAW và trả về dạng HTML Text
-    $htmlContent = file_get_contents("templates/index.html");
+    $htmlContent = include("templates/index.html");
     return $htmlContent;
 });
 

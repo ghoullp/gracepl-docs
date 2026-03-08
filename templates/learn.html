@@ -1241,51 +1241,42 @@ db_exec($db, "CREATE TABLE IF NOT EXISTS users (
 )");
 
 // ── CREATE — thêm dữ liệu ───────────────────
-$id = db_insert($db, "users", [
-    "ten"   => "Alice",
-    "email" => "alice@example.com",
-    "tuoi"  => 25
-]);
-echo "Đã thêm user ID: $id\n";
+db_exec("INSERT INTO users (ten, email, tuoi) VALUES (?, ?, ?)",
+    ["Alice", "alice@example.com", 25]);
 
 // ── READ — đọc dữ liệu ──────────────────────
-// Tất cả
-$users = db_query($db, "SELECT * FROM users ORDER BY id");
+$users = db_query("SELECT * FROM users ORDER BY id");
 foreach ($users as $u) {
     echo "{$u['id']}: {$u['ten']} ({$u['email']})\n";
 }
 
 // Một bản ghi
-$user = db_query_row($db, "SELECT * FROM users WHERE id = ?", [1]);
+$user = db_query_row("SELECT * FROM users WHERE id = ?", [1]);
 if ($user) echo "Tìm thấy: " . $user["ten"];
 
 // Với điều kiện
-$adults = db_query($db, "SELECT * FROM users WHERE tuoi >= ?", [18]);
+$adults = db_query("SELECT * FROM users WHERE tuoi >= ?", [18]);
 
 // ── UPDATE — cập nhật ───────────────────────
-$affected = db_update($db, "users",
-    ["tuoi" => 26, "email" => "alice_new@example.com"],
-    ["id" => $id]
-);
-echo "Đã cập nhật $affected bản ghi\n";
+db_exec("UPDATE users SET tuoi = ?, email = ? WHERE id = ?",
+    [26, "alice_new@example.com", 1]);
 
 // ── DELETE — xóa ────────────────────────────
-$deleted = db_delete($db, "users", ["id" => $id]);
-echo "Đã xóa $deleted bản ghi\n";
+db_exec("DELETE FROM users WHERE id = ?", [1]);
 
 // ── Transaction — đảm bảo tính toàn vẹn ─────
-db_begin($db);
+$tx = db_begin();
 try {
-    db_insert($db, "users", ["ten" => "Bob", "email" => "bob@example.com", "tuoi" => 30]);
-    db_insert($db, "users", ["ten" => "Carol","email" => "carol@example.com","tuoi" => 28]);
-    db_commit($db);
+    db_tx_exec($tx, "INSERT INTO users (ten, email, tuoi) VALUES (?, ?, ?)", ["Bob", "bob@example.com", 30]);
+    db_tx_exec($tx, "INSERT INTO users (ten, email, tuoi) VALUES (?, ?, ?)", ["Carol", "carol@example.com", 28]);
+    db_commit($tx);
     echo "Transaction thành công!";
 } catch ($e) {
-    db_rollback($db);
-    echo "Transaction thất bại: " . $e->message;
+    db_rollback($tx);
+    echo "Transaction thất bại: " . $e->getMessage();
 }
 
-db_close($db);</code></pre>
+db_close();</code></pre>
         </div>
 
         <div class="lesson-complete-btn" data-lesson="20">✅ Đánh dấu đã học xong</div>
@@ -1322,14 +1313,10 @@ http_handle("/register", function($req) {
     }
 
     // Dữ liệu hợp lệ — lưu vào DB
-    $db = db_connect("sqlite://./app.db");
-    $id = db_insert($db, "users", [
-        "ten"       => $body["ten"],
-        "email"     => $body["email"],
-        "mat_khau"  => password_hash($body["mat_khau"]),
-        "tuoi"      => intval($body["tuoi"])
-    ]);
-    db_close($db);
+    db_connect("sqlite://./app.db");
+    db_exec("INSERT INTO users (ten, email, mat_khau, tuoi) VALUES (?, ?, ?, ?)",
+        [$body["ten"], $body["email"], password_hash($body["mat_khau"]), intval($body["tuoi"])]);
+    db_close();
 
     http_json(["success" => true, "user_id" => $id], 201);
 });
@@ -1685,7 +1672,7 @@ http_route_post("/api/posts", function($req) use ($DB, $KEY) {
     $v = validate($b, ["title"=>"required|min:3", "content"=>"required|min:10"]);
     if (!$v["valid"]) { http_json(["errors"=>$v["errors"]], 422); return; }
     $slug = strtolower(str_replace(" ", "-", preg_replace('/[^\w\s-]/', '', $b["title"])));
-    $id = db_insert($DB, "posts", ["title"=>$b["title"],"slug"=>$slug,"content"=>$b["content"],"author"=>$claims["name"],"published"=>1]);
+    db_exec("INSERT INTO posts (title,slug,content,author,published) VALUES (?,?,?,?,?)", [$b["title"],$slug,$b["content"],$claims["name"],1]);
     http_json(["id"=>$id, "slug"=>$slug], 201);
 });
 
