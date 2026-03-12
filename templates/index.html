@@ -1224,6 +1224,8 @@ session_redis("redis.cluster:6379", "password", "0");
 session_start();
 session_set("user_id", 42);
 $uid = session_get("user_id"); // 42
+session_flash("message", "Đã lưu thành công");  // one-time message (sau redirect)
+$msg = session_flash_get("message");            // đọc và xóa flash
 session_destroy();</code></pre>
         </div>
 
@@ -1529,7 +1531,8 @@ http_serve(":8080");</code></pre>
           <tbody>
             <tr><td><code>$req["params"]</code></td><td>Path segments dynamic (<code>/users/:id</code>)</td><td><code>$req["params"]["id"]</code></td></tr>
             <tr><td><code>$req["query"]</code></td><td>Query string (<code>?name=Alice&amp;page=2</code>)</td><td><code>$req["query"]["name"]</code></td></tr>
-            <tr><td><code>$req["body"]</code></td><td>Request body (string)</td><td><code>json_decode($req["body"])</code></td></tr>
+            <tr><td><code>$req["body"]</code></td><td>Request body (string). Form/multipart → body đã parse</td><td><code>json_decode($req["body"])</code></td></tr>
+            <tr><td><code>$req["files"]</code></td><td>Upload: <code>$req["files"][fieldName]</code> = array of <code>{name, size, temp_path, content_type}</code></td><td>—</td></tr>
             <tr><td><code>$req["method"]</code></td><td>HTTP method</td><td><code>"GET"</code>, <code>"POST"</code>…</td></tr>
             <tr><td><code>$req["headers"]</code></td><td>Request headers (map)</td><td><code>$req["headers"]["authorization"]</code></td></tr>
             <tr><td><code>$req["ip"]</code></td><td>Client IP</td><td><code>"127.0.0.1"</code></td></tr>
@@ -1559,6 +1562,7 @@ http_serve(":8080");</code></pre>
             <tr><td><code>http_static($dir [, $prefix])</code></td><td>Serve file tĩnh từ thư mục $dir tại URL $prefix</td></tr>
             <tr><td><code>http_use($fn)</code></td><td>Custom GracePL middleware — $fn($req) trả về true (tiếp tục) hoặc false (chặn)</td></tr>
             <tr><td><code>http_redirect($url [, $code])</code></td><td>Redirect → mặc định 302</td></tr>
+            <tr><td><code>http_redirect_back([$fallback])</code></td><td>Redirect về Referer; không có thì dùng $fallback (mặc định <code>/</code>)</td></tr>
             <tr><td><code>http_request_id([$header])</code></td><td>Inject X-Request-Id vào request &amp; response (tạo mới nếu không có)</td></tr>
             <tr><td><code>http_panic_recover()</code></td><td>Bắt panic trong handler → trả về 500 JSON thay vì crash server</td></tr>
             <tr><td><code>http_active_connections()</code></td><td>Số kết nối HTTP đang active → int</td></tr>
@@ -1635,7 +1639,7 @@ $post = http_post("https://api.example.com/users", [
             </tr>
             <tr>
               <td><code>{{if key}} ... {{endif}}</code></td>
-              <td>Conditional block (truthy: non-empty, non-zero, non-false)</td>
+              <td>Conditional block (truthy); hỗ trợ <b>lồng nhau</b></td>
             </tr>
             <tr>
               <td><code>{{if !key}} ... {{endif}}</code></td>
@@ -1644,6 +1648,14 @@ $post = http_post("https://api.example.com/users", [
             <tr>
               <td><code>{{if key}} ... {{else}} ... {{endif}}</code></td>
               <td>Conditional với else branch</td>
+            </tr>
+            <tr>
+              <td><code>{{key | slice:start:end}}</code> / <code>{{key | upper}}</code> / <code>{{key | lower}}</code></td>
+              <td>Filter: cắt chuỗi, chuyển hoa/thường</td>
+            </tr>
+            <tr>
+              <td><code>{{key | default:"fallback"}}</code> / <code>{{key | length}}</code></td>
+              <td>Filter: giá trị mặc định, độ dài</td>
             </tr>
             <tr>
               <td><code>{{foreach items as item}} ... {{end}}</code></td>
@@ -2031,8 +2043,20 @@ http_serve(":8080");</code></pre>
               <td>URL encode/decode</td>
             </tr>
             <tr>
-              <td><code>htmlspecialchars($s)</code></td>
-              <td>Escape HTML</td>
+              <td><code>htmlspecialchars($s)</code> / <code>htmlentities($s)</code> / <code>html_decode($s)</code></td>
+              <td>Escape / decode HTML</td>
+            </tr>
+            <tr>
+              <td><code>addslashes($s)</code> / <code>strip_tags($s)</code></td>
+              <td>Escape cho SQL / xóa thẻ HTML</td>
+            </tr>
+            <tr>
+              <td><code>markdown_to_html($s)</code></td>
+              <td>Chuyển Markdown sang HTML</td>
+            </tr>
+            <tr>
+              <td><code>slugify($s [, $lang])</code></td>
+              <td>Chuỗi URL-friendly (Unicode)</td>
             </tr>
           </tbody>
         </table>

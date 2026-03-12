@@ -446,6 +446,14 @@ foreach ($parts as $name) { echo $name . "\n"; }
 $bienso = ["Hà Nội", "HCM", "Đà Nẵng"];
 echo implode(" | ", $bienso); // "Hà Nội | HCM | Đà Nẵng"
 
+// Escape HTML / xóa thẻ / Markdown / slug
+echo htmlspecialchars("&lt;script&gt;");  // in ra &amp;lt;script&amp;gt;
+echo htmlentities($s); echo html_decode("&amp;lt;"); // encode/decode HTML
+echo addslashes("O'Brien");        // O\'Brien
+echo strip_tags("&lt;b&gt;Hello&lt;/b&gt;");   // Hello
+echo markdown_to_html("**bold**"); // &lt;strong&gt;bold&lt;/strong&gt;
+echo slugify("Xin chào GracePL!", "vi"); // xin-chao-gracepl
+
 // Định dạng
 $ten = "Alice"; $diem = 9.5;
 echo sprintf("%-10s: %.1f điểm", $ten, $diem); // "Alice     : 9.5 điểm"
@@ -965,9 +973,11 @@ http_handle("/debug", function($req) {
     $path    = $req["path"];             // "/debug"
     $query   = $req["query"];            // ["key" => "value"] từ ?key=value
     $headers = $req["headers"];          // map headers
-    $body    = $req["body"];             // request body (string)
+    $body    = $req["body"];             // request body (string). Form/multipart → $req["files"][fieldName] = [{name, size, temp_path, content_type}]
     $ip      = $req["remote_addr"];      // "127.0.0.1:56789"
     $cookies = $req["cookies"];          // map cookies
+    // Redirect: http_redirect($url); http_redirect_back([$fallback]) — về Referer hoặc fallback (mặc định /)
+    // Session flash (one-time message): session_flash("key", "value"); $msg = session_flash_get("key");
 
     // Query string: GET /debug?name=Alice&page=2
     $name = $query["name"] ?? "Khách";
@@ -1152,6 +1162,7 @@ curl -X DELETE http://localhost:8080/api/todos/1</code></pre>
   {{if is_admin}}
   &lt;div class="admin-banner"&gt;Bạn đang đăng nhập với quyền Admin&lt;/div&gt;
   {{endif}}
+  &lt;!-- {{if}} hỗ trợ lồng nhau. Filter: {{key | slice:start:end}}, {{key | upper}}/lower, {{key | default:"x"}}, {{key | length}} --&gt;
 
   &lt;h2&gt;Danh sách bài viết&lt;/h2&gt;
   {{if posts}}
@@ -1423,8 +1434,10 @@ $phpFiles = glob("*.gp");             // wildcard
 $subDirs = glob("src/*/", GLOB_ONLYDIR); // chỉ thư mục
 
 // ── Upload file qua HTTP (multipart form) ────
+// $req["files"][fieldName] = array of {name, size, temp_path, content_type}
 http_route_post("/upload", function($req) {
-    $file = $req["files"]["file"] ?? null;
+    $files = $req["files"]["file"] ?? [];  // mảng file (có thể nhiều file 1 field)
+    $file = $files[0] ?? null;
 
     if (!$file) {
         http_json(["error" => "Không tìm thấy file"], 400);
@@ -1433,7 +1446,7 @@ http_route_post("/upload", function($req) {
 
     // Kiểm tra mime type (bảo mật)
     $allowed = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
-    if (!in_array($file["type"], $allowed)) {
+    if (!in_array($file["content_type"], $allowed)) {
         http_json(["error" => "Loại file không được phép"], 415);
         return;
     }
@@ -1448,8 +1461,8 @@ http_route_post("/upload", function($req) {
     $ext = substr($file["name"], strrpos($file["name"], "."));
     $newname = "uploads/" . sha1($file["name"] . time()) . $ext;
 
-    // Lưu file
-    file_write_bytes($newname, file_read_bytes($file["tmp"]));
+    // Lưu file (temp_path là đường dẫn file tạm)
+    file_write_bytes($newname, file_read_bytes($file["temp_path"]));
 
     http_json(["url" => "/static/" . basename($newname), "size" => $file["size"]]);
 });
